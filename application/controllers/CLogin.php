@@ -69,7 +69,6 @@ class CLogin extends CI_Controller {
 				}
 			}
 		}
-		echo $cell["picture"];
 		$jsonstr = json_encode($cell);
 		echo $jsonstr;
 	}	
