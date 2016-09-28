@@ -11,7 +11,16 @@
 	
 			$sql = "select * from user where phone=$phone";
 			$res = $this->tmacDB->get_data($sql);
+			if(empty($res)) {
+				return array();
+			}
 			return  $res[0];
+		}
+		public function UpdateUserPassword($phone,$password) {
+			$sql = "update user set passwd=$password where phone=$phone";
+			$res = $this->tmacDB->insert_data($sql);
+			return $res;
+
 		}
 		public function InserUserInfo($phone, $passwd1, $time){
 			$sql = "insert into user(phone, passwd, create_time) values ($phone, $passwd1, '$time')";

@@ -26,6 +26,7 @@ class CLogin extends CI_Controller {
 		parent::__construct();
 		$this->load->model('MRedis');
 		$this->load->model("MUser");
+		$this->load->helper('url');
 		$this->redis = $this->MRedis->_getInstance();
 		
 	}
@@ -40,12 +41,12 @@ class CLogin extends CI_Controller {
 	 beego.Router("/login", &controllers.LoginController{}, "get:LoginCheck")
 	*/
 	public function LoginCheck(){
-		$loginway = $_GET["loginway"];
-		$value = $_GET["value"];
-		$passwd = $_GET["passwd"];
-		//$loginway = $_POST["loginway"];
-		//$value = $_POST["value"];
-		//$passwd = $_POST["passwd"];
+		//$loginway = $_GET["loginway"];
+		//$value = $_GET["value"];
+		//$passwd = $_GET["passwd"];
+		$loginway = $_POST["loginway"];
+		$value = $_POST["value"];
+		$passwd = $_POST["passwd"];
 		
         	$data = $this->MUser->GetUserInfoPlus($loginway, $value);
       
@@ -59,9 +60,16 @@ class CLogin extends CI_Controller {
 				if ($data["schoolno"] != "") {
 					$cell["type"] = $this->config->item('MY_USERPERFECT');
 				}
+				global $appDir;
+				$path = $appDir . "/views/image/head/$value.jpg";
+				if(file_exists($path)) {
+					$cell["picture"] = base_url("views/image/head/$value.jpg");
+				} else {
+					$cell["picture"] = base_url("views/image/head/default.jpeg");
+				}
 			}
 		}
-		
+		echo $cell["picture"];
 		$jsonstr = json_encode($cell);
 		echo $jsonstr;
 	}	

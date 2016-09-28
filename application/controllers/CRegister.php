@@ -40,54 +40,55 @@ class CRegister extends CI_Controller {
 	beego.Router("/register/verifycode", &controllers.RegisterController{}, "get:RegisterDeal")
 	*/
 	public function RegisterDeal(){
-		$phone = $_POST["phone"];
-		$vc = $_POST["verifycode"];
-		//$phone = $_GET["phone"];
-		//$vc = $_GET["verifycode"];
-        	$info = $this->MUser->GetUserInfo($phone);
-		$passwdb = "";
-	        $schoolno = "";
-		$isUser = False;
-		$phoneVc = array();	
-		if(!empty($info)) {
-			$isUser = true;
-		}
+		$phone = $_GET["phone"];
 		$retRegInfo = array();
-		if ($vc == "0") {
-			// generate random verify code 
-			//$this->load->model('MRedis');
-			//$redis = $this->MRedis->_getInstance();
-			$this->redis->set($phone, "123456"); 	
-		} else {
-			$retRegInfo["ret"] = "0";
-			//$redis = $this->MRedis->_getInstance();
-			$verifycode = $this->redis->get($phone); 	
-			if ($vc == $verifycode) {
-				$retRegInfo["ret"] = "1";
-			}
-		}
+		$retRegInfo["ret"] = "0";
+		$this->redis->set($phone, "123456"); 	
+		$retRegInfo["ret"] = "1";
 		$jsonstr = json_encode($retRegInfo);
 		echo $jsonstr;
 	}	
 	public function RegisterPasswdUpLoad(){
 		//$phone =  $_GET["phone"];
+		//$vc =  $_GET["verifycode"];
 		//$passwd1 = $_GET["passwd1"];
 		//$passwd2 = $_GET["passwd2"];
+		$type = $_POST["type"]; #1:new 2:reset
 		$phone =  $_POST["phone"];
+		$vc =  $_POST["verifycode"];
 		$passwd1 = $_POST["passwd1"];
 		$passwd2 = $_POST["passwd2"];
 	
 		$cell = array();
+		
+		#password regular check
 		$ret = JudgePasswd($passwd1, $passwd2, $this->config);
 		$cell["type"] = $ret;
-
+		//verify code check
+		$verifycode = $this->redis->get($phone); 	
+		if ($vc != $verifycode || $verifycode == "") {
+			$cell["type"] = $this->config->item('MY_REGISTER_VERIFYCODEERR');
+		}
+		
+		//ru ku check
 		$dbret = false;
 		$ok = $this->config->item('MY_REGISTER_PASSWDOK');
-		if ($ret == $ok) {
+		if ($cell["type"] == $ok) {
 			$time = GetTime(0);   
-        		$dbret = $this->MUser->InserUserInfo($phone, $passwd1, $time);
-			if (!$dbret) {
-				$cell["type"] = $this->config->item('MY_REGISTER_PASSWDINSERTERROR'); 
+			if($type == 1) {
+        			$dbret = $this->MUser->InserUserInfo($phone, $passwd1, $time);
+				if (!$dbret) {
+					$cell["type"] = $this->config->item('MY_REGISTER_PASSWDINSERTERROR'); 
+				}
+			} 
+			else if($type == 2) {
+				$dbret = $this->MUser->GetUserInfo($phone);
+				if(!$dbret) {
+					$cell["type"] = $this->config->item('MY_RESET_USERNOEXIST');
+				} else {
+					$dbret = $this->MUser->UpdateUserPassword($phone, $passwd1);
+					$cell["type"] = $this->config->item('MY_RESET_OK');
+				}
 			}
 		}
 

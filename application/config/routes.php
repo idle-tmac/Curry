@@ -67,3 +67,6 @@ $route['register/userinfo?(:any)'] = 'CRegister/RegisterPasswdUpLoad'; #post api
 
 /*login*/
 $route['login?(:any)'] = 'CLogin/LoginCheck'; #post api
+
+/*picture*/
+#$route['image?(:any)'] = 'CImage:GetImage'; 

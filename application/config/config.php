@@ -23,7 +23,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = '';
+$config['base_url'] = 'http://120.76.130.252:8000/application/';
 
 /*
 |--------------------------------------------------------------------------
@@ -525,11 +525,16 @@ $config['MY_LEAGUE_INSCHOOL'] = 1;
 $config['MY_LEAGUE_OUTSCHOOL'] = 2;
 $config['MY_LEAGUE_MY'] = 3;
 
-#error
+#register error
 $config['MY_REGISTER_PASSWDDIFFERROR'] = 20000;
 $config['MY_REGISTER_PASSWDLENGTHERROR'] = 20001;
 $config['MY_REGISTER_PASSWDOK'] = 20002;
 $config['MY_REGISTER_PASSWDINSERTERROR'] = 20003;
+$config['MY_REGISTER_VERIFYCODEERR']=20004;
+
+#reset passwd
+$config['MY_RESET_USERNOEXIST'] = 21000;
+$config['MY_RESET_OK'] = 21001;
 
 #login
 $config['MY_USERNOEXIST'] = 10000;

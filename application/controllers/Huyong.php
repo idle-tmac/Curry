@@ -20,12 +20,14 @@ class Huyong extends CI_Controller {
 	 */
 	public function index()
 	{
-		#$this->load->view('welcome_message');
-		$this->load->model('MRedis');
-		$redis = $this->MRedis->_getInstance();
-		$redis -> set("tutorial-name", "Redis tutorial");
-	        echo $redis->get("tutorial-name");
-		echo "hello huyong!";
+		#$url = 'http://120.76.130.252:8000/application/views/15652352290.jpg';
+		$this->load->helper('url');
+		$this->load->view('index.html');
+		#$this->load->model('MRedis');
+		#$redis = $this->MRedis->_getInstance();
+		#$redis -> set("tutorial-name", "Redis tutorial");
+	        #echo $redis->get("tutorial-name");
+		echo base_url("abc");
 	}
 	public function getAge()
 	{
