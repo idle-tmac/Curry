@@ -45,7 +45,7 @@ class CLogin extends CI_Controller {
 		//$value = $_GET["value"];
 		//$passwd = $_GET["passwd"];
 		$loginway = $_POST["loginway"];
-		$value = $_POST["value"];
+		$value = $_POST["loginid"];
 		$passwd = $_POST["passwd"];
 		
         	$data = $this->MUser->GetUserInfoPlus($loginway, $value);
