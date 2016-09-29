@@ -23,9 +23,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-#online
-//$config['base_url'] = 'http://120.76.130.252:8000/application/';
 #develop
+//$config['base_url'] = 'http://120.76.130.252:8000/application/';
+#online
 $config['base_url'] = 'http://120.76.130.252/application/';
 
 /*

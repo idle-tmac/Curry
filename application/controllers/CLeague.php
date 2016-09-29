@@ -22,6 +22,17 @@ class CLeague extends CI_Controller {
 	 * map to /index.php/welcome/<method_name>
 	 * @see https://codeigniter.com/user_guide/general/urls.html
 	 */
+
+	public function __construct() {
+		parent::__construct();
+		$this->load->model('MMatch');
+		$this->load->model('MLeague');
+		$this->load->model("MTeam");
+		$this->load->model("MRedis");
+		$this->redis = $this->MRedis->_getInstance();
+	}	
+
+	
 	public function index()
 	{
 		#$this->load->view('welcome_message');
@@ -40,12 +51,15 @@ class CLeague extends CI_Controller {
 		
 		$rcells = array();
 		$rcell = array();	
-		$this->load->model("MLeague");
         	$cells = $this->MLeague->GetLeagueInfo($schoolid, $num, $ticket, $type);
 		foreach($cells as $cell){
 			$rcell["league_id"] = $cell['leagueid'];
 			#rcell["league_logo_address"] = $imageDir + "/leagueLogoDir/$logoid.jpg";
 			#rcell["league_poster_address"] = $imageDir + "/leaguePosterDir/$posterid.jpg"；
+			$leagueid = $cell['leagueid'];
+			$matchnum = $this->MMatch->GetMatchCntByLeagueid($leagueid);
+			$finishmatchnum = $this->MMatch->GetOverMatchCntByLeagueid($leagueid);
+			$rcell["process"] = $finishmatchnum / $matchnum;
 			$rcell["league_name"] = $cell['name'];
 			$rcell["league_team_num"] = $cell['team_num'];
 			$rcell["league_fans_num"] = $cell['team_fans'];
@@ -67,8 +81,6 @@ class CLeague extends CI_Controller {
 		
 		$cells = array();
 		$cell = array();
-		$this->load->model("MTeam");
-		$this->load->model("MMatch");
 		$matches = $this->MMatch->GetMatchInfo($schoolid, $leagueid);
 		foreach($matches as $match) {
 			$cell["matchid"] = $match["matchid"];

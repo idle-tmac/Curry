@@ -13,4 +13,14 @@
 			$res = $this->tmacDB->get_data($sql);
         		return $res;
 		}
+		public function GetMatchCntByLeagueid($leagueid) {
+        		$sql = "select count(*) as num from `match` where  leagueid = $leagueid";
+			$res = $this->tmacDB->get_data($sql);
+        		return $res[0]['num'];
+		}
+		public function GetOverMatchCntByLeagueid($leagueid) {
+        		$sql = "select count(distinct matchid) as num from match_result where  leagueid = $leagueid";
+			$res = $this->tmacDB->get_data($sql);
+        		return $res[0]['num'];
+		}
  	}
