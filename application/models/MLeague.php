@@ -11,4 +11,9 @@
 			$res = $this->tmacDB->get_data($sql);
 			return $res;
 		}
+		public function AddLeagueFans($leagueid) {
+			$sql = "update league set team_fans=team_fans+1 where leagueid=$leagueid";
+			$res = $this->tmacDB->insert_data($sql);
+			return $res;
+		}
  	}
