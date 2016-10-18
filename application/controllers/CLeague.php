@@ -127,7 +127,15 @@ class CLeague extends CI_Controller {
 	}	
 	public function AddLeagueFans() {
 		$leagueid = $_GET['leagueid'];
+		$r = array();
 		$res = $this->MLeague->AddLeagueFans($leagueid);
+		if($res) {
+			$r["ret"] = 1;
+		} else {
+			$r["ret"] = 0;
+		}
+		$jsonstr = json_encode($r);
+		echo $jsonstr;
 	}
 }
 
