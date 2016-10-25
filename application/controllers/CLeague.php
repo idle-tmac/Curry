@@ -63,9 +63,10 @@ class CLeague extends CI_Controller {
 			$rcell["league_name"] = $cell['name'];
 			$rcell["league_team_num"] = $cell['team_num'];
 			$rcell["league_fans_num"] = $cell['team_fans'];
-			$rcell["league_type"] = $cell['league_type'];
-			$rcell["league_start_date"] = $cell['start_time'];
-			$rcell["league_end_date"] = $cell['end_time'];
+			$typeFlag = 'MY_LEAGUE_TYPE_' . $cell['league_type'];
+			$rcell["league_type"] = $this->config->item($typeFlag);
+			$rcell["league_start_date"] = strtotime($cell['start_time']);
+			$rcell["league_end_date"] = strtotime($cell['end_time']);
 			$rcell["league_introduction"] = $cell['introduction'];
 			$rcell["ticket"] = $cell['id'];
 			$rcells[] = $rcell;
@@ -84,7 +85,7 @@ class CLeague extends CI_Controller {
 		$matches = $this->MMatch->GetMatchInfo($leagueid);
 		foreach($matches as $match) {
 			$cell["matchid"] = $match["matchid"];
-			$cell["match_time"] = $match["match_time"];
+			$cell["match_time"] = strtotime($match["match_time"]);
 			$cell["match_address"] = $match["match_address"];
 			$cell["teamid1"] = $match["teamid1"];
 			$cell["teamid2"] = $match["teamid2"];
