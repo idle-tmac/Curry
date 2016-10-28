@@ -24,9 +24,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 #develop
-$config['base_url'] = 'http://120.76.130.252:8000/application/';
+//$config['base_url'] = 'http://120.76.130.252:8000/application/';
 #online
-//$config['base_url'] = 'http://120.76.130.252/application/';
+$config['base_url'] = 'http://120.76.130.252/application/';
 
 /*
 |--------------------------------------------------------------------------
