@@ -41,7 +41,7 @@ class CLeague extends CI_Controller {
 	
 	
 	/*
-	beego.Router("/CLeague/cells?type=xxx&schoolid=xxx&num=xxx&ticket=xxx", &controllers.LeagueController{}, "get:ReqinSchoolLeagueCells")
+	beego.Router("/league/inschool/cells?schoolid=xxx&num=xxx&ticket=xxx", &controllers.LeagueController{}, "get:ReqinSchoolLeagueCells")
 	*/
 	public function ReqinSchoolLeagueCells(){
 		$schoolid = $_GET['schoolid'];
@@ -63,9 +63,11 @@ class CLeague extends CI_Controller {
 			$rcell["league_name"] = $cell['name'];
 			$rcell["league_team_num"] = $cell['team_num'];
 			$rcell["league_fans_num"] = $cell['team_fans'];
-			$rcell["league_type"] = $cell['league_type'];
-			$rcell["league_start_date"] = $cell['start_time'];
-			$rcell["league_end_date"] = $cell['end_time'];
+			$typeFlag = 'MY_LEAGUE_TYPE_' . $cell['league_type'];
+			$rcell["league_type"] = $this->config->item($typeFlag);
+			$rcell["league_start_date"] = strtotime($cell['start_time']);
+			$rcell["league_end_date"] = strtotime($cell['end_time']);
+			$rcell["league_introduction"] = $cell['introduction'];
 			$rcell["ticket"] = $cell['id'];
 			$rcells[] = $rcell;
 		}
@@ -76,21 +78,22 @@ class CLeague extends CI_Controller {
 	 *  beego.Router("/league/inschool/cell", &controllers.LeagueController{}, "get:ReqinSchoolLeagueCell")
 	 */
 	public function ReqinSchoolLeagueCell() {
-		$schoolid = $_GET['schoolid'];
 		$leagueid = $_GET['leagueid'];
 		
 		$cells = array();
 		$cell = array();
-		$matches = $this->MMatch->GetMatchInfo($schoolid, $leagueid);
+		$matches = $this->MMatch->GetMatchInfo($leagueid);
 		foreach($matches as $match) {
 			$cell["matchid"] = $match["matchid"];
-			$cell["match_time"] = $match["match_time"];
+			$cell["match_time"] = strtotime($match["match_time"]);
 			$cell["match_address"] = $match["match_address"];
 			$cell["teamid1"] = $match["teamid1"];
 			$cell["teamid2"] = $match["teamid2"];
-			$cell["match_time"] = $match["match_time"];
-			$cell["match_address"] = $match["match_address"];
-			$cell["is_end"] = $match["status"];
+			$mresult = $this->MMatch->GetMatchScoreInfo($match["matchid"]);
+			$cell["is_end"] = 0;
+			if($mresult) {
+				$cell["is_end"] = 1;
+			}
 
 			$team_cells = array();
 	 		$team_cell = array();
@@ -99,8 +102,11 @@ class CLeague extends CI_Controller {
 			$teamInfo = $this->MTeam->GetTeamInfo($teamid1);
 			$team_cell["team_id"] = $teamInfo["teamid"];
 			$team_cell["team_name"] = $teamInfo["name"];
+			$team_cell["score"] = 0;
+			if($mresult) {
+				$team_cell["score"] = $mresult[$teamid1];
+			}
 			#$team_cell["team_logo_address"] = imageServer + "/" + beego.AppConfig.String("leagueLogoDir") + "/" + teamInfo["logoid"] + ".jpg"
-			$team_cell["is_home_team"] = "1";
 			$team_cells[] = $team_cell;
 		
 	 		$team_cell1 = array();
@@ -108,8 +114,11 @@ class CLeague extends CI_Controller {
 			$teamInfo = $this->MTeam->GetTeamInfo($teamid2);
 			$team_cell1["team_id"] = $teamInfo["teamid"];
 			$team_cell1["team_name"] = $teamInfo["name"];
+			$team_cell1["score"] = 0;
+			if($mresult) {
+				$team_cell1["score"] = $mresult[$teamid2];
+			}
 			#team_cell1["team_logo_address"] = imageServer + "/" + beego.AppConfig.String("leagueLogoDir") + "/" + teamInfo["logoid"] + ".jpg"
-			$team_cell1["is_home_team"] = "0";
 			$team_cells[] = $team_cell1;
 			$cell["matches"] = $team_cells;
 			$cells[] = $cell;	
@@ -117,10 +126,17 @@ class CLeague extends CI_Controller {
 		$jsonstr = json_encode($cells);
 		echo $jsonstr;
 	}	
-	public function ReqinSchoolLeagueCell() {
-		$matchid = $_GET['schoolid'];
-		
-	
+	public function AddLeagueFans() {
+		$leagueid = $_GET['leagueid'];
+		$r = array();
+		$res = $this->MLeague->AddLeagueFans($leagueid);
+		if($res) {
+			$r["ret"] = 1;
+		} else {
+			$r["ret"] = 0;
+		}
+		$jsonstr = json_encode($r);
+		echo $jsonstr;
 	}
 }
 

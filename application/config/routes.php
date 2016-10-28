@@ -60,6 +60,7 @@ $route['translate_uri_dashes'] = FALSE;
 /*inschool league*/
 $route['league/inschool/cells?(:any)'] = 'CLeague/ReqinSchoolLeagueCells';
 $route['league/inschool/cell?(:any)'] = 'CLeague/ReqinSchoolLeagueCell';
+$route['league/fans?(:any)'] = 'CLeague/AddLeagueFans';
 
 /*register*/
 $route['register/verifycode?(:any)'] = 'CRegister/RegisterDeal';  #post api

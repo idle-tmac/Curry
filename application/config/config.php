@@ -530,6 +530,12 @@ $config['MY_REDIS_IMAGE'] = 'redis_image_';
 $config['MY_LEAGUE_INSCHOOL'] = 1;
 $config['MY_LEAGUE_OUTSCHOOL'] = 2;
 $config['MY_LEAGUE_MY'] = 3;
+#league type
+$config['MY_LEAGUE_TYPE_1vs1'] = 1;
+$config['MY_LEAGUE_TYPE_2vs2'] = 2;
+$config['MY_LEAGUE_TYPE_3vs3'] = 3;
+$config['MY_LEAGUE_TYPE_4vs4'] = 4;
+$config['MY_LEAGUE_TYPE_5vs5'] = 5;
 
 #register error
 $config['MY_REGISTER_PASSWDDIFFERROR'] = 20000;
