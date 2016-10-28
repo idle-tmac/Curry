@@ -1,6 +1,11 @@
 <?php
 	
 	date_default_timezone_set('UTC');
+	function WriteToFile($filepath, $text, $parttion = 'w') {
+		$f = fopen($filepath, $parttion);
+		fwrite($f, $text);
+		fclose($f);
+	}
 	function GetTime($diff) { 
 		date_default_timezone_set('UTC');
 		$t = date('Y-m-d H:i:s', time());

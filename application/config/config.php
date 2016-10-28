@@ -24,9 +24,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 #develop
-//$config['base_url'] = 'http://120.76.130.252:8000/application/';
+$config['base_url'] = 'http://120.76.130.252:8000/application/';
 #online
-$config['base_url'] = 'http://120.76.130.252/application/';
+//$config['base_url'] = 'http://120.76.130.252/application/';
 
 /*
 |--------------------------------------------------------------------------
@@ -523,6 +523,9 @@ $config['proxy_ips'] = '';
 |
 |set self defined global Val, start with MY_
 */
+#redis prefix
+$config['MY_REDIS_IMAGE'] = 'redis_image_';
+
 #league
 $config['MY_LEAGUE_INSCHOOL'] = 1;
 $config['MY_LEAGUE_OUTSCHOOL'] = 2;
@@ -544,3 +547,7 @@ $config['MY_USERNOEXIST'] = 10000;
 $config['MY_USERWRONGPASSWD'] = 10001;
 $config['MY_USERPERFECT'] = 10002;
 $config['MY_USERLESSINFO'] = 10003;
+$config['MY_BAD_PARAMETER'] = 10004;
+
+#image
+$config['MY_GET_IMAGE_OK'] = 11000;

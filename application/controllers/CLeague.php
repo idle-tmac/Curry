@@ -117,6 +117,11 @@ class CLeague extends CI_Controller {
 		$jsonstr = json_encode($cells);
 		echo $jsonstr;
 	}	
+	public function ReqinSchoolLeagueCell() {
+		$matchid = $_GET['schoolid'];
+		
+	
+	}
 }
 
 	

@@ -41,9 +41,12 @@ class CLogin extends CI_Controller {
 	 beego.Router("/login", &controllers.LoginController{}, "get:LoginCheck")
 	*/
 	public function LoginCheck(){
-		//$loginway = $_GET["loginway"];
-		//$value = $_GET["value"];
-		//$passwd = $_GET["passwd"];
+		if(!isset($_POST["loginway"]) || !isset($_POST["loginid"]) || !isset($_POST["passwd"])) {
+			$cell["type"] = $this->config->item('MY_BAD_PARAMETER');
+			$jsonstr = json_encode($cell);
+			echo $jsonstr;
+			return;
+		}
 		$loginway = $_POST["loginway"];
 		$value = $_POST["loginid"];
 		$passwd = $_POST["passwd"];
