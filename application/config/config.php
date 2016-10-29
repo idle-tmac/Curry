@@ -24,9 +24,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 #develop
-//$config['base_url'] = 'http://120.76.130.252:8000/application/';
+$config['base_url'] = 'http://120.76.130.252:8000/application/';
 #online
-$config['base_url'] = 'http://120.76.130.252/application/';
+//$config['base_url'] = 'http://120.76.130.252/application/';
 
 /*
 |--------------------------------------------------------------------------
@@ -216,6 +216,7 @@ $config['directory_trigger'] = 'd';
 | your log files will fill up very fast.
 |
 */
+//$config['log_threshold'] = array(3);
 $config['log_threshold'] = 0;
 
 /*
@@ -241,7 +242,7 @@ $config['log_path'] = '';
 | Note: Leaving it blank will default to 'php'.
 |
 */
-$config['log_file_extension'] = '';
+$config['log_file_extension'] = 'info';
 
 /*
 |--------------------------------------------------------------------------

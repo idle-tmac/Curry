@@ -1,5 +1,4 @@
 <?php
-	
 	date_default_timezone_set('UTC');
 	function WriteToFile($filepath, $text, $parttion = 'w') {
 		$f = fopen($filepath, $parttion);

@@ -3,7 +3,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 $appDir=realpath(dirname(__FILE__).'/../');
 $imageDir=realpath(dirname(__FILE__).'/../image');
-require_once($appDir."/libraries/util.php");
 
 class CLogin extends CI_Controller {
 
@@ -26,7 +25,6 @@ class CLogin extends CI_Controller {
 		parent::__construct();
 		$this->load->model('MRedis');
 		$this->load->model("MUser");
-		$this->load->helper('url');
 		$this->redis = $this->MRedis->_getInstance();
 		
 	}

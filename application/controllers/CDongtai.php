@@ -1,8 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-$appDir=realpath(dirname(__FILE__).'/../');
-require_once($appDir."/libraries/util.php");
 
 class CDongtai extends CI_Controller {
 
@@ -21,6 +19,10 @@ class CDongtai extends CI_Controller {
 	 * map to /index.php/welcome/<method_name>
 	 * @see https://codeigniter.com/user_guide/general/urls.html
 	 */
+	
+	public function __construct() {
+		parent::__construct();
+	}	
 	public function index()
 	{
 		#$this->load->view('welcome_message');

@@ -3,7 +3,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 $appDir=realpath(dirname(__FILE__).'/../');
 $imageDir=realpath(dirname(__FILE__).'/../image');
-require_once($appDir."/libraries/util.php");
 
 class CRegister extends CI_Controller {
 

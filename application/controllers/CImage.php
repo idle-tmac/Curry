@@ -4,8 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $appDir=realpath(dirname(__FILE__).'/../');
 $imageDir=realpath(dirname(__FILE__).'/../image');
 $dataDir=realpath(dirname(__FILE__).'/../data');
-require_once($appDir."/libraries/util.php");
-require_once($appDir."/logs/log.php");
+#require_once($appDir."/logs/log.php");
 
 class CImage extends CI_Controller {
 
@@ -26,7 +25,7 @@ class CImage extends CI_Controller {
 	 */
 	public function __construct() {
 		parent::__construct();
-		$this->log1 = new Log();
+		$this->log1 = new LogInfo();
 		$this->load->model('MRedis');
 		$this->redis = $this->MRedis->_getInstance();
 		
@@ -61,7 +60,7 @@ class CImage extends CI_Controller {
 		WriteToFile($filepath , $data);	
 
 		$text = $type . "||" . $id . "||" .$srcdata;
-		$this->log1->WriteLog("$dataDir/log/debug.info", "imagedata", $text);
+		$this->log1->WriteLog("imagedata", $text);
 			
 		$err = $this->config->item('MY_GET_IMAGE_OK');	
 		$res["ret"] = $err;

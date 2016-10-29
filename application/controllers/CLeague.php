@@ -3,7 +3,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 $appDir=realpath(dirname(__FILE__).'/../');
 $imageDir=realpath(dirname(__FILE__).'/../image');
-require_once($appDir."/libraries/util.php");
 
 class CLeague extends CI_Controller {
 
@@ -36,13 +35,15 @@ class CLeague extends CI_Controller {
 	public function index()
 	{
 		#$this->load->view('welcome_message');
-		echo "hello huyong!";
+		f1();
+		log_message('info', 'The purpose of some variable is to provide some value.');
+		echo "hello umvp!";
 	}
 	
 	
 	/*
 	beego.Router("/league/inschool/cells?schoolid=xxx&num=xxx&ticket=xxx", &controllers.LeagueController{}, "get:ReqinSchoolLeagueCells")
-	*/
+i	*/
 	public function ReqinSchoolLeagueCells(){
 		$schoolid = $_GET['schoolid'];
         	$num = $_GET["num"];
