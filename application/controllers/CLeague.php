@@ -35,8 +35,6 @@ class CLeague extends CI_Controller {
 	public function index()
 	{
 		#$this->load->view('welcome_message');
-		f1();
-		log_message('info', 'The purpose of some variable is to provide some value.');
 		echo "hello umvp!";
 	}
 	
@@ -60,7 +58,8 @@ i	*/
 			$leagueid = $cell['leagueid'];
 			$matchnum = $this->MMatch->GetMatchCntByLeagueid($leagueid);
 			$finishmatchnum = $this->MMatch->GetOverMatchCntByLeagueid($leagueid);
-			$rcell["process"] = $finishmatchnum / $matchnum;
+			$rcell["league_match_finish_num"] = $finishmatchnum;
+			$rcell["league_match_num"] = $matchnum;
 			$rcell["league_name"] = $cell['name'];
 			$rcell["league_team_num"] = $cell['team_num'];
 			$rcell["league_fans_num"] = $cell['team_fans'];
