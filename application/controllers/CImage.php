@@ -52,7 +52,7 @@ class CImage extends CI_Controller {
 
 		$prefix = $this->config->item('MY_REDIS_IMAGE');
 		$key = $prefix . $type . "_" . $id;
-                //$this->redis->hmset($key, array($srcdata, $suffix));
+                $this->redis->hmset($key, array($srcdata, $suffix));
 		//var_dump($this->redis->hgetall($key));
 		
 		$data = base64_decode($srcdata);

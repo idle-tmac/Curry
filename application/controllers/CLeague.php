@@ -28,6 +28,7 @@ class CLeague extends CI_Controller {
 		$this->load->model('MLeague');
 		$this->load->model("MTeam");
 		$this->load->model("MRedis");
+		$this->load->model("MMTeam");
 		$this->redis = $this->MRedis->_getInstance();
 	}	
 
@@ -137,6 +138,52 @@ i	*/
 		}
 		$jsonstr = json_encode($r);
 		echo $jsonstr;
+	}
+	public function ReqTeamMembers() {
+		$ret = array();
+		$teamid1 = $_GET['teamid1'];
+		$teamid2 = $_GET['teamid2'];
+		$teaminfo = $this->MMTeam->GetTeamMembers( $teamid1);
+		if (!empty($teaminfo)) {
+			$teaminfo = $teaminfo[0]['teaminfo'];
+		}
+		$ret[$teamid1] = $teaminfo;
+		$teaminfo = $this->MMTeam->GetTeamMembers( $teamid2);
+		if (!empty($teaminfo)) {
+			$teaminfo = $teaminfo[0]['teaminfo'];
+		}
+		$ret[$teamid2] = $teaminfo;
+		$jsonstr = json_encode($ret);
+                echo $jsonstr;	
+	}
+	public function ReqStartData(){
+		$res = array();
+		$userid = $_GET['userid'];
+                $matchid = $_GET['matchid'];
+		$failStatus = $this->config->item('MY_MATCH_ENTRY_FAIL');
+		$succStatus = $this->config->item('MY_MATCH_ENTRY_SUCCESS');
+
+		$prefix = $this->config->item('MY_REDIS_MATCH_SESSION');
+		$key = $prefix . $matchid;
+		if( ! $this->redis->exists($key)) {
+			$this->redis->set($key, $userid);
+			 $res['ret'] = $succStatus;//第一个人
+		} else {
+			$preid = $this->redis->get($key);
+			if($preid != $userid){
+				$res['ret'] = $failStatus;//不是之前那个人		
+			} else {
+
+				$res['ret'] = $succStatus;//是之前那个人
+			}
+		}
+		if($res['ret'] != $failStatus) {
+			$mresult = $this->MMatch->GetMatchResultInfo($matchid);
+			$res['match_data'] = $mresult;
+		}
+
+		$jsonstr = json_encode($res);
+                echo $jsonstr;
 	}
 }
 

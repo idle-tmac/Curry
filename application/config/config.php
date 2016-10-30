@@ -526,6 +526,7 @@ $config['proxy_ips'] = '';
 */
 #redis prefix
 $config['MY_REDIS_IMAGE'] = 'redis_image_';
+$config['MY_REDIS_MATCH_SESSION'] = 'redis_match_session_';
 
 #league
 $config['MY_LEAGUE_INSCHOOL'] = 1;
@@ -537,6 +538,11 @@ $config['MY_LEAGUE_TYPE_2vs2'] = 2;
 $config['MY_LEAGUE_TYPE_3vs3'] = 3;
 $config['MY_LEAGUE_TYPE_4vs4'] = 4;
 $config['MY_LEAGUE_TYPE_5vs5'] = 5;
+
+#match entry
+$config['MY_MATCH_ENTRY_FAIL'] = 0;
+$config['MY_MATCH_ENTRY_SUCCESS'] = 1;
+
 
 #register error
 $config['MY_REGISTER_PASSWDDIFFERROR'] = 20000;

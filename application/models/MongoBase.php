@@ -1,5 +1,5 @@
 <?php
-class MMongo extends CI_Model {
+class MongoBase {
 	private  $mongo;
 	private static $instance;
 	
@@ -12,7 +12,6 @@ class MMongo extends CI_Model {
         	return self::$instance;
     	}
 	function __construct($dbName) {
-		 parent::__construct();
 		 $tmp = new MongoClient();
 		 $this->mongo = $tmp->$dbName;
 	}

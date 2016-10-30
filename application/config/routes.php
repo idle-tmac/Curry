@@ -61,6 +61,8 @@ $route['translate_uri_dashes'] = FALSE;
 $route['league/inschool/cells?(:any)'] = 'CLeague/ReqinSchoolLeagueCells';
 $route['league/inschool/cell?(:any)'] = 'CLeague/ReqinSchoolLeagueCell';
 $route['league/fans?(:any)'] = 'CLeague/AddLeagueFans';
+$route['league/inschool/team?(:any)'] = 'CLeague/ReqTeamMembers';
+$route['league/inschool/start?(:any)'] = 'CLeague/ReqStartData';
 
 /*register*/
 $route['register/verifycode?(:any)'] = 'CRegister/RegisterDeal';  #post api

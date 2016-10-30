@@ -1,37 +1,20 @@
 <?php
-class MMongo extends CI_Model {
-	private  $mongo;
-	private static $instance;
-	
-	public static function getInstance($dbName){
-    
-        	if (!isset(self::$mongo)) {
-            		self::$instance = new self($dbName); 
-        	}
+	$appDir=realpath(dirname(__FILE__).'/../');
+	require_once($appDir."/models/MongoBase.php");
+	class MMTeam extends CI_Model{
 
-        	return self::$instance;
-    	}
-	function __construct($dbName) {
-		 parent::__construct();
-		 $tmp = new MongoClient();
-		 $this->mongo = $tmp->$dbName;
-	}
-	public function GetData($table, $condition, $db = "tmac"){
-		$collection=$this->mongo->$table; 
-		$cur = $collection->find($condition);
-		$res = array();
-		foreach ($cur as $document) {
-        		$res[] = $document;
+		function __construct() {
+			 parent::__construct();
+			 $this->tmacMongo = MongoBase::getInstance("tmac"); // 连接
 		}
-		return $res;
+		public function GetTeamMembers($teamid) {
+			$res = $this->tmacMongo->GetData("team",array("teamid"=>$teamid));
+			if(empty($res)) {
+				return array();
+			}
+			return $res;
+		}
 	}
-	public function InsertData($table, $dataArr, $db = "tmac"){
-		$collection=$this->mongo->$table; 
-		$result=$collection->insert($dataArr); #简单插入  
-		var_dump($dataArr['_id']);
-		return $dataArr['_id']; #MongoDB会返回一个记录标识  
-	}
-}
 #$m = MongoBase::getInstance("tmac"); // 连接
 #$res = $m->GetData("t1",array("_id"=>1));
 #var_dump($res);

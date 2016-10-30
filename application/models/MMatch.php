@@ -41,4 +41,17 @@
 
         		return $score;
 		}
+		public function GetMatchResultInfo($matchid) {
+        		$sql = "select * from match_result where  matchid = $matchid";
+			$res = $this->tmacDB->get_data($sql);
+			if(empty($res)) {
+				return array();
+			}
+			$id = $res[0]['teamid'];
+                        $score[$id] = $res[0];
+
+                        $id = $res[1]['teamid'];
+                        $score[$id] = $res[1];
+			return $score;
+		}
  	}
