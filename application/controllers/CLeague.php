@@ -72,8 +72,12 @@ i	*/
 			$rcell["ticket"] = $cell['id'];
 			$rcells[] = $rcell;
 		}
-		$jsonstr = json_encode($rcells);
-		echo $jsonstr;
+		if(empty($recells)) {
+			$code = $this->config->item('MY_ECHO_FAIL');	
+		} else {
+			$code = $this->config->item('MY_ECHO_OK');
+		}
+		MessageEcho($code, "", $rcells);
 	}
 	/*
 	 *  beego.Router("/league/inschool/cell", &controllers.LeagueController{}, "get:ReqinSchoolLeagueCell")
@@ -124,20 +128,23 @@ i	*/
 			$cell["matches"] = $team_cells;
 			$cells[] = $cell;	
        	 	}
-		$jsonstr = json_encode($cells);
-		echo $jsonstr;
+		if(empty($cells)) {
+			$code = $this->config->item('MY_ECHO_FAIL');	
+		} else {
+			$code = $this->config->item('MY_ECHO_OK');
+		}
+		MessageEcho($code, $code, $cells);
 	}	
 	public function AddLeagueFans() {
 		$leagueid = $_GET['leagueid'];
 		$r = array();
 		$res = $this->MLeague->AddLeagueFans($leagueid);
 		if($res) {
-			$r["ret"] = 1;
+			$code = $this->config->item('MY_ECHO_OK');	
 		} else {
-			$r["ret"] = 0;
+			$code = $this->config->item('MY_ECHO_FAIL');	
 		}
-		$jsonstr = json_encode($r);
-		echo $jsonstr;
+		MessageEcho($code, $code, array());
 	}
 	public function ReqTeamMembers() {
 		$ret = array();
@@ -157,33 +164,69 @@ i	*/
                 echo $jsonstr;	
 	}
 	public function ReqStartData(){
-		$res = array();
 		$userid = $_GET['userid'];
                 $matchid = $_GET['matchid'];
-		$failStatus = $this->config->item('MY_MATCH_ENTRY_FAIL');
-		$succStatus = $this->config->item('MY_MATCH_ENTRY_SUCCESS');
-
+		$failStatus = $this->config->item('MY_ECHO_FAIL');
+		$succStatus = $this->config->item('MY_ECHO_OK');
+		
 		$prefix = $this->config->item('MY_REDIS_MATCH_SESSION');
 		$key = $prefix . $matchid;
 		if( ! $this->redis->exists($key)) {
 			$this->redis->set($key, $userid);
-			 $res['ret'] = $succStatus;//第一个人
+			 $code = $succStatus;//第一个人
 		} else {
 			$preid = $this->redis->get($key);
 			if($preid != $userid){
-				$res['ret'] = $failStatus;//不是之前那个人		
+				$code = $failStatus;//不是之前那个人		
 			} else {
 
-				$res['ret'] = $succStatus;//是之前那个人
+				$code = $succStatus;//是之前那个人
 			}
 		}
-		if($res['ret'] != $failStatus) {
+		if($code != $failStatus) {
 			$mresult = $this->MMatch->GetMatchResultInfo($matchid);
 			$res['match_data'] = $mresult;
 		}
 
-		$jsonstr = json_encode($res);
-                echo $jsonstr;
+		MessageEcho($code, $code, "");
+	}
+	public function MatchEvent() {
+                $matchid = $_GET['matchid'];
+		$msg = $_GET['message'];
+		$eventInfo = json_decode($msg);
+		$eventType = $eventInfo['event_type'];
+		$playerid = $eventInfo['userid'];
+		$playerNo =  $eventInfo['userNo'];
+		$playerName = $eventInfo['userName'];
+		$teamid1 = $eventInfo['teamid1'];
+		$teamid2 = $eventInfo['teamid2'];
+		$teamName1 = $eventInfo['teamname1'];
+		$teamName2 = $eventInfo['teamname2'];
+		$matchPattern = $eventInfo['match_pattern'];
+		$part = $eventInfo['part'];
+		$eventTeamid = $eventInfo['event_teamid'];
+		//update redis array
+		//updateRedisMatchInfo($matchid, $eventType, $playerid , $part);
+
+
+		//generate text (time score part teamname playerNo playName eventType )
+		$time = date('H:i:s', time());
+		$scoreArr = GetTotalScoreFromRedis(); //array(1=>10,2=>13)
+		$teamnameArr = array($teamid1 => $teamName1, $teamid2 => $teamName2);
+		
+		$partName = GetPartName($matchPattern, $part);
+		$thirdArr = array($scoreArr[$teamid1] . '-' .  $scoreArr[$teamid2], $partName);
+		
+		$eventArr = $this->config->item('MY_MATCH_EVENT'); 
+		$text =  $eventArr[$eventType];
+		$fourthArr = array($teamnameArr[$eventTeamid] . " " . $playName . " " . $text;
+		
+		$message = array($time, $scoreArr, $thirdArr, $fourthArr);
+
+		
+		$code = $this->config->item('MY_ECHO_OK');
+		MessageEcho($code, "", $message);
+
 	}
 }
 

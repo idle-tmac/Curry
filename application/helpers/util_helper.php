@@ -1,11 +1,19 @@
 <?php
 	date_default_timezone_set('UTC');
+	function MessageEcho($code, $message="", $response = "") {
+		$jsonstr = json_encode(array(
+			'code' => $code,
+			'message' => $message,
+			'response' => $response
+		));
+		echo $jsonstr;
+	}
 	function WriteToFile($filepath, $text, $parttion = 'w') {
 		$f = fopen($filepath, $parttion);
 		fwrite($f, $text);
 		fclose($f);
 	}
-	function GetTime($diff) { 
+	function GetTime($diff = 0) { 
 		date_default_timezone_set('UTC');
 		$t = date('Y-m-d H:i:s', time());
    	     	$timestamp = strtotime($t); 

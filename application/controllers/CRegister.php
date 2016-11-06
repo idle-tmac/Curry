@@ -48,10 +48,7 @@ class CRegister extends CI_Controller {
 		echo $jsonstr;
 	}	
 	public function RegisterPasswdUpLoad(){
-		//$phone =  $_GET["phone"];
-		//$vc =  $_GET["verifycode"];
-		//$passwd1 = $_GET["passwd1"];
-		//$passwd2 = $_GET["passwd2"];
+		//sageEcho($code, $message, $cell)
 		$type = $_POST["type"]; #1:new 2:reset
 		$phone =  $_POST["phone"];
 		$vc =  $_POST["verifycode"];

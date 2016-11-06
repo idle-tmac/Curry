@@ -23,8 +23,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-#develop
-//$config['base_url'] = 'http://120.76.130.252:8000/application/';
 #online
 $config['base_url'] = 'http://120.76.130.252/application/';
 
@@ -524,9 +522,14 @@ $config['proxy_ips'] = '';
 |
 |set self defined global Val, start with MY_
 */
+#message
+$config['MY_ECHO_OK'] = 1;
+$config['MY_ECHO_FAIL'] = 0;
+
 #redis prefix
 $config['MY_REDIS_IMAGE'] = 'redis_image_';
 $config['MY_REDIS_MATCH_SESSION'] = 'redis_match_session_';
+
 
 #league
 $config['MY_LEAGUE_INSCHOOL'] = 1;
@@ -538,11 +541,6 @@ $config['MY_LEAGUE_TYPE_2vs2'] = 2;
 $config['MY_LEAGUE_TYPE_3vs3'] = 3;
 $config['MY_LEAGUE_TYPE_4vs4'] = 4;
 $config['MY_LEAGUE_TYPE_5vs5'] = 5;
-
-#match entry
-$config['MY_MATCH_ENTRY_FAIL'] = 0;
-$config['MY_MATCH_ENTRY_SUCCESS'] = 1;
-
 
 #register error
 $config['MY_REGISTER_PASSWDDIFFERROR'] = 20000;
@@ -562,5 +560,21 @@ $config['MY_USERPERFECT'] = 10002;
 $config['MY_USERLESSINFO'] = 10003;
 $config['MY_BAD_PARAMETER'] = 10004;
 
-#image
-$config['MY_GET_IMAGE_OK'] = 11000;
+#match event type
+$config['MY_MATCH_EVENT'] = array(
+	"",
+	'罚球命中',  #'PENALTY_YES',
+	'罚球不中',  #'PENALTY_NO' ,
+	'二分命中',  #'TWOSCORE_YES',
+	'二分不中',  #'TWOSCORE_NO',
+	'三分命中',  #'THREESCORE_YES',
+	'三分命中',  #'THREESCORE_NO',
+	'抢到篮板',  #'BACKBOARD',
+	'抢断成功',  #'STEAL',
+	'助攻',      #'ASIST',
+	'大帽',      #'BLOCKSHOT',
+	'犯规',      #'FOULS',
+	'失误',      #'MISTAKE'
+);
+
+$config['MY_MATCH_EVENT_PENALTY'] = 1;

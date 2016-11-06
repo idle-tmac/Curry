@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<event>
+    <>
+        <db>tmac</db>
+        <port>3306</port>
+        <host>10.116.80.39</host>
+        <username>root</username>
+        <password>admin</password>
+        <charset>utf8</charset>
+    </tmac>
+</event>

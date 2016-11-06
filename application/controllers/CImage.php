@@ -62,9 +62,7 @@ class CImage extends CI_Controller {
 		$text = $type . "||" . $id . "||" .$srcdata;
 		$this->log1->WriteLog("imagedata", $text);
 			
-		$err = $this->config->item('MY_GET_IMAGE_OK');	
-		$res["ret"] = $err;
-		$jsonstr = json_encode($res);
-		echo $jsonstr;
+		$code = $this->config->item('MY_ECHO_OK');	
+		MessageEcho($code);
 	}	
 }

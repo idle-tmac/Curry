@@ -31,7 +31,7 @@ class CLogin extends CI_Controller {
 	public function index()
 	{
 		#$this->load->view('welcome_message');
-		echo "hello huyong!";
+		echo "hello umvp!";
 	}
 	
 	
@@ -48,18 +48,19 @@ class CLogin extends CI_Controller {
 		$loginway = $_POST["loginway"];
 		$value = $_POST["loginid"];
 		$passwd = $_POST["passwd"];
-		
+		$code = 0;
         	$data = $this->MUser->GetUserInfoPlus($loginway, $value);
-      
+      		
 		$cell = array();
-		$cell["type"] = $this->config->item('MY_USERNOEXIST');
+		$message = $this->config->item('MY_USERNOEXIST');
 		if(!empty($data)) {
-			$cell["type"] = $this->config->item('MY_USERWRONGPASSWD');
+			$message = $this->config->item('MY_USERWRONGPASSWD');
 			if (base64_encode($passwd) == base64_encode($data['passwd'])) {
-				$cell["type"] = $this->config->item('MY_USERLESSINFO');
+				$code = 1;
+				$message = $this->config->item('MY_USERLESSINFO');
 				$cell["schoolid"] = $data["schoolno"];
 				if ($data["schoolno"] != "") {
-					$cell["type"] = $this->config->item('MY_USERPERFECT');
+					$message = $this->config->item('MY_USERPERFECT');
 				}
 				global $appDir;
 				$path = $appDir . "/views/image/head/$value.jpg";
@@ -70,7 +71,6 @@ class CLogin extends CI_Controller {
 				}
 			}
 		}
-		$jsonstr = json_encode($cell);
-		echo $jsonstr;
+		MessageEcho($code, $message, $cell);
 	}	
 }
