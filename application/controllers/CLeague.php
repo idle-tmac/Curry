@@ -144,7 +144,7 @@ i	*/
 		} else {
 			$code = $this->config->item('MY_ECHO_FAIL');	
 		}
-		MessageEcho($code, $code, array());
+		MessageEcho($code, $code);
 	}
 	public function ReqTeamMembers() {
 		$ret = array();
@@ -219,7 +219,7 @@ i	*/
 		
 		$eventArr = $this->config->item('MY_MATCH_EVENT'); 
 		$text =  $eventArr[$eventType];
-		$fourthArr = array($teamnameArr[$eventTeamid] . " " . $playName . " " . $text;
+		$fourthArr = array($teamnameArr[$eventTeamid], $playName, $text);
 		
 		$message = array($time, $scoreArr, $thirdArr, $fourthArr);
 

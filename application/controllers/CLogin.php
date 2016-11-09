@@ -48,7 +48,7 @@ class CLogin extends CI_Controller {
 		$loginway = $_POST["loginway"];
 		$value = $_POST["loginid"];
 		$passwd = $_POST["passwd"];
-		$code = 0;
+		$code = $this->config->item('MY_ECHO_FAIL');
         	$data = $this->MUser->GetUserInfoPlus($loginway, $value);
       		
 		$cell = array();
@@ -56,9 +56,10 @@ class CLogin extends CI_Controller {
 		if(!empty($data)) {
 			$message = $this->config->item('MY_USERWRONGPASSWD');
 			if (base64_encode($passwd) == base64_encode($data['passwd'])) {
-				$code = 1;
+				$code = $this->config->item('MY_ECHO_OK');
 				$message = $this->config->item('MY_USERLESSINFO');
 				$cell["schoolid"] = $data["schoolno"];
+				$cell["userid"] = $data["userid"];
 				if ($data["schoolno"] != "") {
 					$message = $this->config->item('MY_USERPERFECT');
 				}
