@@ -20,9 +20,17 @@
 			$res = $this->tmacDB->insert_data($sql);
 			return $res;
 		}
+		public function DelLeagueFans($leagueid) {
+			$sql = "update league set team_fans=team_fans-1 where leagueid=$leagueid";
+			$res = $this->tmacDB->insert_data($sql);
+			return $res;
+		}
 		public function GetLeagueInfoById($leagueid) {//(cells []map[string]string) {
         		$sql = "select * from league  where leagueid=$leagueid";
 			$res = $this->tmacDB->get_data($sql);
-			return $res;
+			if(!$res) {
+				return False;
+			}
+			return $res[0];
 		}
  	}

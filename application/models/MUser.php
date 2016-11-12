@@ -35,4 +35,26 @@
 			}
 			return $res[0];
 		}
+		public function GetUserLeagueFans($userid){
+			$sql = "select leagueid from user_league_fans where userid=$userid";
+			$res = $this->tmacDB->get_data($sql);
+			if(empty($res)) {
+                                return array();
+                        }
+			$ret = array();
+			foreach($res  as $item) {
+				$ret[] = $item['leagueid'];
+			}
+			return $ret;
+		}
+		public function DelUserLeagueFans($userid, $leagueid) {
+			$sql = "delete from user_league_fans where userid=$userid and leagueid=$leagueid";
+			$ret = $this->tmacDB->insert_data($sql);
+			return $ret;
+		}
+		public function AddUserLeagueFans($userid, $leagueid) {
+			$sql = "insert into user_league_fans(userid, leagueid) values($userid, $leagueid)";
+			$ret = $this->tmacDB->insert_data($sql);
+			return $ret;
+		}
 	}

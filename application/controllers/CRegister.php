@@ -46,7 +46,7 @@ class CRegister extends CI_Controller {
 		$retRegInfo["ret"] = "1";
 		$jsonstr = json_encode($retRegInfo);
 		$code = $this->config->item('MY_ECHO_OK');
-		MessageEcho($code, "", $jsonstr);
+		MessageEcho($code);
 	}	
 	public function RegisterPasswdUpLoad(){
 		//sageEcho($code, $message, $cell)

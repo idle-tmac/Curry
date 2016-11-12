@@ -26,6 +26,7 @@ class CLeague extends CI_Controller {
 		parent::__construct();
 		$this->load->model('MMatch');
 		$this->load->model('MLeague');
+		$this->load->model('MUser');
 		$this->load->model("MTeam");
 		$this->load->model("MRedis");
 		$this->load->model("MMTeam");
@@ -63,12 +64,12 @@ i	*/
 			$rcell["league_match_num"] = $matchnum;
 			$rcell["league_name"] = $cell['name'];
 			$rcell["league_team_num"] = $cell['team_num'];
-			$rcell["league_fans_num"] = $cell['team_fans'];
+			#$rcell["league_fans_num"] = $cell['team_fans'];
 			$typeFlag = 'MY_LEAGUE_TYPE_' . $cell['league_type'];
 			$rcell["league_type"] = $this->config->item($typeFlag);
 			$rcell["league_start_date"] = strtotime($cell['start_time']);
 			$rcell["league_end_date"] = strtotime($cell['end_time']);
-			$rcell["league_introduction"] = $cell['introduction'];
+			#$rcell["league_introduction"] = $cell['introduction'];
 			$rcell["ticket"] = $cell['id'];
 			$rcells[] = $rcell;
 		}
@@ -84,9 +85,29 @@ i	*/
 	 */
 	public function ReqinSchoolLeagueCell() {
 		$leagueid = $_GET['leagueid'];
-		
+		$userid = $_GET['userid'];
+		$response = array();
 		$cells = array();
 		$cell = array();
+
+		$leagueInfo = $this->MLeague->GetLeagueInfoById($leagueid);
+		$cell["league_introduction"] = $leagueInfo['introduction'];
+		$cell["league_name"] = $leagueInfo['name'];
+		$cell["league_team_num"] = $leagueInfo['team_num'];
+		$cell["league_fans_num"] = $leagueInfo['team_fans'];
+		$matchnum = $this->MMatch->GetMatchCntByLeagueid($leagueid);
+		$finishmatchnum = $this->MMatch->GetOverMatchCntByLeagueid($leagueid);
+		$cell["league_match_finish_num"] = $finishmatchnum;
+		$cell["league_match_num"] = $matchnum;
+		$leagueArr = $this->MUser->GetUserLeagueFans($userid);
+		$cell['focus'] = 0;
+		if(in_array($leagueid, $leagueArr)) {
+			$cell['focus'] = 1;
+		}
+		$response['league_info'] = $cell;
+		
+		$cell = array();
+
 		$matches = $this->MMatch->GetMatchInfo($leagueid);
 		foreach($matches as $match) {
 			$cell["matchid"] = $match["matchid"];
@@ -95,9 +116,9 @@ i	*/
 			$cell["teamid1"] = $match["teamid1"];
 			$cell["teamid2"] = $match["teamid2"];
 			$mresult = $this->MMatch->GetMatchScoreInfo($match["matchid"]);
-			$cell["is_end"] = 0;
+			$cell["status"] = 0;
 			if($mresult) {
-				$cell["is_end"] = 1;
+				$cell["status"] = 1;
 			}
 
 			$team_cells = array();
@@ -125,26 +146,38 @@ i	*/
 			}
 			#team_cell1["team_logo_address"] = imageServer + "/" + beego.AppConfig.String("leagueLogoDir") + "/" + teamInfo["logoid"] + ".jpg"
 			$team_cells[] = $team_cell1;
-			$cell["matches"] = $team_cells;
+			$cell["match_info"] = $team_cells;
 			$cells[] = $cell;	
        	 	}
+		
+		$response['matches'] = $cells;
+
 		if(empty($cells)) {
 			$code = $this->config->item('MY_ECHO_FAIL');	
 		} else {
 			$code = $this->config->item('MY_ECHO_OK');
 		}
-		MessageEcho($code, $code, $cells);
+		MessageEcho($code, "", $response);
 	}	
 	public function AddLeagueFans() {
 		$leagueid = $_GET['leagueid'];
-		$r = array();
-		$res = $this->MLeague->AddLeagueFans($leagueid);
-		if($res) {
+		$userid = $_GET['userid'];
+		$reponse = array();
+		$leagueArr = $this->MUser->GetUserLeagueFans($userid);
+		if(in_array($leagueid, $leagueArr)) {
+			$res1 = $this->MLeague->DelLeagueFans($leagueid);
+			$res2 = $this->MUser->DelUserLeagueFans($userid, $leagueid);
+		} else {
+			$res1 = $this->MLeague->AddLeagueFans($leagueid);
+			$res2 = $this->MUser->AddUserLeagueFans($userid, $leagueid);
+		}
+
+		if($res1 && $res2) {
 			$code = $this->config->item('MY_ECHO_OK');	
 		} else {
 			$code = $this->config->item('MY_ECHO_FAIL');	
 		}
-		MessageEcho($code, $code);
+		MessageEcho($code);
 	}
 	public function ReqTeamMembers() {
 		$ret = array();
