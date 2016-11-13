@@ -118,7 +118,7 @@ i	*/
 			$mresult = $this->MMatch->GetMatchScoreInfo($match["matchid"]);
 			$cell["status"] = 0;
 			if($mresult) {
-				$cell["status"] = 1;
+				$cell["status"] = 2;
 			}
 
 			$team_cells = array();
@@ -223,10 +223,10 @@ i	*/
 
 		MessageEcho($code, $code, "");
 	}
-	public function MatchEvent() {
+	public function UploadMatchEvent() {
                 $matchid = $_GET['matchid'];
-		$msg = $_GET['message'];
-		$eventInfo = json_decode($msg);
+		$msg = $_GET['param'];
+		$eventInfo = json_decode($msg, true);
 		$eventType = $eventInfo['event_type'];
 		$playerid = $eventInfo['userid'];
 		$playerNo =  $eventInfo['userNo'];
@@ -238,13 +238,15 @@ i	*/
 		$matchPattern = $eventInfo['match_pattern'];
 		$part = $eventInfo['part'];
 		$eventTeamid = $eventInfo['event_teamid'];
+		
 		//update redis array
 		//updateRedisMatchInfo($matchid, $eventType, $playerid , $part);
 
 
 		//generate text (time score part teamname playerNo playName eventType )
-		$time = date('H:i:s', time());
-		$scoreArr = GetTotalScoreFromRedis(); //array(1=>10,2=>13)
+		$time = strtotime(GetTime());
+		//$scoreArr = GetTotalScoreFromRedis(); //array(1=>10,2=>13)
+		$scoreArr = array(1=>10,2=>13);
 		$teamnameArr = array($teamid1 => $teamName1, $teamid2 => $teamName2);
 		
 		$partName = GetPartName($matchPattern, $part);
@@ -252,14 +254,91 @@ i	*/
 		
 		$eventArr = $this->config->item('MY_MATCH_EVENT'); 
 		$text =  $eventArr[$eventType];
-		$fourthArr = array($teamnameArr[$eventTeamid], $playName, $text);
+		$fourthArr = array($teamnameArr[$eventTeamid], $playerName, $text);
 		
 		$message = array($time, $scoreArr, $thirdArr, $fourthArr);
-
 		
-		$code = $this->config->item('MY_ECHO_OK');
-		MessageEcho($code, "", $message);
+		$onlineRedisPrefixMessage = $this->config->item('MY_REDIS_MATCH_LIVE_MESSAGE'); 
+		$onlineRedisPrefixTicket = $this->config->item('MY_REDIS_MATCH_LIVE_TICKET');
 
+		#add ticket
+		/*$ret = $this->redis->exist($onlineRedisPrefixTicket);
+		if(!$ret) {
+			$this->redis->set($onlineRedisPrefixTicket, 0);
+		}*/
+		$key = $onlineRedisPrefixTicket . "_" . $matchid;	
+		$this->redis->incr($key);
+		$ticket = $this->redis->get($key);
+
+		#set context
+		$key = $onlineRedisPrefixMessage . "_" . $matchid . "_" . $ticket;
+		$this->redis->set($key, json_encode($message));
+		$code = $this->config->item('MY_ECHO_OK');
+		MessageEcho($code);
+	}
+	public function ReqMatchLiveHead(){
+		$matchid = $_GET['matchid'];
+		$response = array();
+		$cell = array();
+		$match = $this->MMatch->GetMatchInfoByMatchid($matchid);
+		$cell["match_time"] = strtotime($match["match_time"]);
+		$cell["match_address"] = $match["match_address"];
+		$cell["teamid1"] = $match["teamid1"];
+		$cell["teamid2"] = $match["teamid2"];
+		$mresult = $this->MMatch->GetMatchScoreInfo($match["matchid"]);
+		$cell["status"] = 0;
+		if($mresult) {
+			$cell["status"] = 2;
+		}
+		$response['match_info'] = $cell;
+		
+		$teamInfo = $this->MTeam->GetTeamInfo($match["teamid1"]);
+		$fans = $this->MMatch->GetMatchTeamFans($matchid, $match["teamid1"]);
+		$team_cell["team_id"] = $teamInfo["teamid"];
+		$team_cell["team_name"] = $teamInfo["name"];
+		$team_cell["fans"] = $fans;
+		$team_cell["score"] = 16;
+		$teamInfo = $this->MTeam->GetTeamInfo($match["teamid2"]);
+		$fans = $this->MMatch->GetMatchTeamFans($matchid, $match["teamid2"]);
+		$team_cell1["team_id"] = $teamInfo["teamid"];
+		$team_cell1["team_name"] = $teamInfo["name"];
+		$team_cell1["fans"] = $fans;
+		$team_cell1["score"] = 18;
+		$response['team_info'] = array($team_cell, $team_cell1);
+		$code = $this->config->item('MY_ECHO_OK');
+		MessageEcho($code, "", $response);
+	}
+	public function ReqMatchLiveMessage(){
+		$matchid = $_GET['matchid'];
+		//$userid = $_GET['userid'];
+		$ticket = $_GET['ticket'];
+		
+		$onlineRedisPrefixTicket = $this->config->item('MY_REDIS_MATCH_LIVE_TICKET');
+		$key = $onlineRedisPrefixTicket . "_" . $matchid;	
+		$maxTicket = $this->redis->get($key);
+
+		#set context
+		$response = array();
+		$i = ($ticket == 0) ? 1 : $ticket;
+		$onlineRedisPrefixMessage = $this->config->item('MY_REDIS_MATCH_LIVE_MESSAGE'); 
+		for(;$i <= $maxTicket; $i ++) {
+			$key = $onlineRedisPrefixMessage . "_" . $matchid . "_" . $i;
+			$response[] = $this->redis->get($key);
+		}
+		$code = $this->config->item('MY_ECHO_OK');
+		MessageEcho($code, "", $response);
+	}
+	public function AddMatchTeamFans() {
+		$matchid = $_GET['matchid'];
+		$teamid = $_GET['teamid'];
+		$response = array();
+		$ret = $this->MMatch->AddMatchTeamFans($matchid, $teamid);
+		if($ret) {
+			$code = $this->config->item('MY_ECHO_OK');
+		} else {
+			$code = $this->config->item('MY_ECHO_FAIL');
+		}
+		MessageEcho($code);
 	}
 }
 

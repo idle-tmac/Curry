@@ -1,5 +1,4 @@
 <?php
-	date_default_timezone_set('UTC');
 	function MessageEcho($code, $message="", $response = "") {
 		$jsonstr = json_encode(array(
 			'code' => $code,
@@ -14,7 +13,7 @@
 		fclose($f);
 	}
 	function GetTime($diff = 0) { 
-		date_default_timezone_set('UTC');
+		date_default_timezone_set('PRC');
 		$t = date('Y-m-d H:i:s', time());
    	     	$timestamp = strtotime($t); 
 		return  date('Y-m-d H:i:s', $timestamp + $diff);

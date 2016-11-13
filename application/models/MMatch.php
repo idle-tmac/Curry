@@ -13,6 +13,14 @@
 			$res = $this->tmacDB->get_data($sql);
         		return $res;
 		}
+		public function GetMatchInfoByMatchid($matchid) {//(cells []map[string]string) {
+        		$sql = "select * from `match` where leagueid = $matchid";
+			$res = $this->tmacDB->get_data($sql);
+			if(empty($res)) {
+				return array();
+			}
+			return $res[0];
+		}
 		public function GetMatchCntByLeagueid($leagueid) {
         		$sql = "select count(*) as num from `match` where  leagueid = $leagueid";
 			$res = $this->tmacDB->get_data($sql);
@@ -53,5 +61,18 @@
                         $id = $res[1]['teamid'];
                         $score[$id] = $res[1];
 			return $score;
+		}
+		public function AddMatchTeamFans($matchid, $teamid) {
+			$sql = "update match_result set team_fans=team_fans+1 where matchid=$matchid and teamid=$teamid";
+			$res = $this->tmacDB->insert_data($sql);
+			return $res;
+		}
+		public function GetMatchTeamFans($matchid, $teamid) {
+        		$sql = "select team_fans from match_result where  matchid = $matchid and teamid=$teamid";
+			$res = $this->tmacDB->get_data($sql);
+			if(empty($res)) {
+				return array();
+			}
+			return $res[0]['team_fans'];
 		}
  	}

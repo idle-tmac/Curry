@@ -527,8 +527,10 @@ $config['MY_ECHO_OK'] = 1;
 $config['MY_ECHO_FAIL'] = 0;
 
 #redis prefix
-$config['MY_REDIS_IMAGE'] = 'redis_image_';
-$config['MY_REDIS_MATCH_SESSION'] = 'redis_match_session_';
+$config['MY_REDIS_IMAGE'] = 'redis_image';
+$config['MY_REDIS_MATCH_SESSION'] = 'redis_match_session';
+$config['MY_REDIS_MATCH_LIVE_MESSAGE'] = 'redis_match_live_message';
+$config['MY_REDIS_MATCH_LIVE_TICKET'] = 'redis_match_live_ticket';
 
 
 #league

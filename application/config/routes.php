@@ -63,7 +63,10 @@ $route['league/inschool/cell?(:any)'] = 'CLeague/ReqinSchoolLeagueCell';
 $route['league/fans?(:any)'] = 'CLeague/AddLeagueFans';
 $route['league/inschool/team?(:any)'] = 'CLeague/ReqTeamMembers';
 $route['league/inschool/start?(:any)'] = 'CLeague/ReqStartData';
-
+$route['league/live/head?(:any)'] = 'CLeague/ReqMatchLiveHead';
+$route['league/live/message?(:any)'] = 'CLeague/ReqMatchLiveMessage';
+$route['league/live/fans?(:any)'] = 'CLeague/AddMatchTeamFans';
+$route['league/matchevent?(:any)'] = 'CLeague/UploadMatchEvent';
 /*register*/
 $route['register/verifycode?(:any)'] = 'CRegister/RegisterDeal';  #post api
 $route['register/userinfo?(:any)'] = 'CRegister/RegisterPasswdUpLoad'; #post api
