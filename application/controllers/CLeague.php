@@ -85,7 +85,7 @@ i	*/
 			$rcell["ticket"] = $cell['id'];
 			$rcells[] = $rcell;
 		}
-		if(empty($recells)) {
+		if(empty($rcells)) {
 			$code = $this->config->item('MY_ECHO_FAIL');	
 		} else {
 			$code = $this->config->item('MY_ECHO_OK');

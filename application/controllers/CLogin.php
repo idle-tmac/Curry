@@ -40,8 +40,9 @@ class CLogin extends CI_Controller {
 	*/
 	public function LoginCheck(){
 		if(!isset($_POST["loginway"]) || !isset($_POST["loginid"]) || !isset($_POST["passwd"])) {
-			$cell["type"] = $this->config->item('MY_BAD_PARAMETER');
-			$jsonstr = json_encode($cell);
+			$message = $this->config->item('MY_BAD_PARAMETER');
+            $code = $this->config->item('MY_ECHO_FAIL');
+            MessageEcho($code, $message);
 			echo $jsonstr;
 			return;
 		}
