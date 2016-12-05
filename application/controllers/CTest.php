@@ -6,7 +6,7 @@ $imageDir=realpath(dirname(__FILE__).'/../image');
 $dataDir=realpath(dirname(__FILE__).'/../data');
 #require_once($appDir."/logs/log.php");
 
-class CImage extends CI_Controller {
+class CTest extends CI_Controller {
 
 	/**
 	 * Index Page for this controller.
@@ -32,36 +32,9 @@ class CImage extends CI_Controller {
 	}
 	public function index()
 	{
+		#MessageEcho('0', '吃顶了', '斯科特');
+		echo MY_REDIS_IMAGE;
+		#MessageEcho('0', '吃顶了', array("1"=>'fasdfs'));
+		f();
 	}
-	
-	public function GetImageFromApp(){
-		global $dataDir, $imageDir;
-		$res = array();
-		if(!isset($_POST["type"]) or !isset($_POST["id"]) 
-			or !isset($_POST["data"]) or !isset($_POST["suffix"])) {
-			$err = $this->config->item('MY_BAD_PARAMETER');	
-			$res["ret"] = $err;
-			$jsonstr = json_encode($res);
-			echo $jsonstr;
-			return;
-		}
-		$type = $_POST["type"];
-		$id = $_POST["id"];
-		$srcdata = $_POST["data"];
-		$suffix = $_POST["suffix"];
-
-		$key = MY_REDIS_IMAGE . "_" . $type . "_" . $id;
-                $this->redis->hmset($key, array($srcdata, $suffix));
-		//var_dump($this->redis->hgetall($key));
-		
-		$data = base64_decode($srcdata);
-		$filepath = "$imageDir/head/$id.$suffix"; 
-		WriteToFile($filepath , $data);	
-
-		$text = $type . "||" . $id . "||" .$srcdata;
-		$this->log1->WriteLog("imagedata", $text);
-			
-		$code = $this->config->item('MY_ECHO_OK');	
-		MessageEcho($code);
-	}	
 }

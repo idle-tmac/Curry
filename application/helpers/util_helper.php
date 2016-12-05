@@ -1,4 +1,8 @@
 <?php
+	function f() {
+		$aMatchStatisticInfo = $this->config->item('MY_MATCH_STATISTIC');
+		var_dump($aMatchStatisticInfo);
+	}
 	function MessageEcho($code, $message="", $response = "") {
 		$jsonstr = json_encode(array(
 			'code' => $code,

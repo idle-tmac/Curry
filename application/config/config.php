@@ -565,18 +565,50 @@ $config['MY_BAD_PARAMETER'] = 10004;
 #match event type
 $config['MY_MATCH_EVENT'] = array(
 	"",
-	'罚球命中',  #'PENALTY_YES',
-	'罚球不中',  #'PENALTY_NO' ,
-	'二分命中',  #'TWOSCORE_YES',
-	'二分不中',  #'TWOSCORE_NO',
-	'三分命中',  #'THREESCORE_YES',
-	'三分命中',  #'THREESCORE_NO',
-	'抢到篮板',  #'BACKBOARD',
-	'抢断成功',  #'STEAL',
-	'助攻',      #'ASIST',
-	'大帽',      #'BLOCKSHOT',
-	'犯规',      #'FOULS',
-	'失误',      #'MISTAKE'
+	1 => '罚球命中',  #'PENALTY_YES',
+	2 => '罚球不中',  #'PENALTY_NO' ,
+	3 => '二分命中',  #'TWOSCORE_YES',
+	4 => '二分不中',  #'TWOSCORE_NO',
+	5 => '三分命中',  #'THREESCORE_YES',
+	6 => '三分不中',  #'THREESCORE_NO',
+	7 => '抢到篮板',  #'BACKBOARD',
+	8 => '抢断成功',  #'STEAL',
+	9 => '助攻',      #'ASIST',
+	10 => '大帽',      #'BLOCKSHOT',
+	11 => '犯规',      #'FOULS',
+	12 => '失误',      #'MISTAKE'
 );
-
+$config['MY_MATCH_STATISTIC'] = array(
+	'SCORE' => 'score',
+	'TWOPOINTSCORE' => 'twopointscore',
+	'THREEPOINTSCORE' => 'threepointscore',
+	'PENALTYPOINTSCORE' => 'penaltypointscore',
+	'OKSHOOTCNT' => 'okShootCnt',
+	'ALLSHOOTCNT' => 'allShootCnt',
+	'OKTHIRDCNT' => 'okThirdCnt',
+	'ALLTHIRDCNT' => 'allThirdCnt',
+	'OKPENALTYCNT' => 'okPenaltyCnt',
+	'ALLPENALTYCNT' => 'allPenaltyCnt',
+	'BLACKBOARD' => 'blackboard',
+	'ASSIST' => 'assist',
+	'STEAL' => 'steal',
+	'BLOCK' => 'block',
+	'MISTAKE' => 'mistake',
+	'FOULS' => 'fouls'
+);
+$config['MY_MATCH_EVENT_STATISTIC'] = array(
+	"",
+	1 => array('SCORE', 'PENALTYPOINTSCORE', 'OKPENALTYCNT', 'ALLPENALTYCNT'),
+	2 => array('ALLPENALTYCNT'),
+	3 => array('SCORE', 'TWOPOINTSCORE', 'OKSHOOTCNT', 'ALLSHOOTCNT'),
+	4 => array('ALLSHOOTCNT'),
+	5 => array('SCORE', 'THREEPOINTSCORE', 'OKTHIRDCNT', 'ALLTHIRDCNT', 'OKSHOOTCNT', 'ALLSHOOTCNT'),
+	6 => array('ALLTHIRDCNT', 'ALLSHOOTCNT'),
+	7 => array('BLACKBOARD'),
+	8 => array('STEAL'),
+	9 => array('ASSIST'),
+	10 => array('BLOCK'),
+	11 => array('FOULS'),
+	12 => array('MISTAKE')
+);
 $config['MY_MATCH_EVENT_PENALTY'] = 1;

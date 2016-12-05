@@ -89,7 +89,7 @@ $autoload['drivers'] = array();
 |
 |	$autoload['helper'] = array('url', 'file');
 */
-$autoload['helper'] = array('match', 'util', 'url', 'file');
+$autoload['helper'] = array('statistic', 'match', 'util', 'url', 'file');
 
 /*
 | -------------------------------------------------------------------
@@ -103,7 +103,7 @@ $autoload['helper'] = array('match', 'util', 'url', 'file');
 | config files.  Otherwise, leave it blank.
 |
 */
-$autoload['config'] = array();
+$autoload['config'] = array('prefix_redis');
 
 /*
 | -------------------------------------------------------------------

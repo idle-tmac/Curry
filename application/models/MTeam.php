@@ -11,4 +11,17 @@
 			$res = $this->tmacDB->get_data($sql);
         		return $res[0];
 		}
+
+		public function GetTeamUserInfoByTeamid($teamid, $fields = array()){
+			if(empty($fields)) {
+        		$sql = "select * from user_team where  teamid = $teamid";
+			} else {
+				$sql = "select " . implode(",",$fields) . " from user_team where  teamid = $teamid";
+			}
+			$res = $this->tmacDB->get_data($sql);
+			if(empty($res)) {
+				return array();
+			}
+        	return $res;
+		}
  	}
