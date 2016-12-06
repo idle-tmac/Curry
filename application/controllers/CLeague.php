@@ -237,8 +237,6 @@ i	*/
 	public function UploadMatchEvent() {
         $matchid = $_GET['matchid'];
 		$msg = $_GET['param'];
-		echo $msg . "\n";
-		return;
 		$eventInfo = json_decode($msg, true);
 		$eventType = $eventInfo['event_type'];
 		$playerid = $eventInfo['userid'];
@@ -344,6 +342,18 @@ i	*/
 		}
 		$code = $this->config->item('MY_ECHO_OK');
 		MessageEcho($code, "", $response);
+	}
+	public function  ReqLiveMatchStatistic() {
+		$matchid = $_GET['matchid'];
+		$sKey = MY_REDIS_MATCH_LIVE_STATISTIC . "_" . $matchid;
+		$jResponse = $this->redis->get($sKey);
+		if($jResponse) {
+            $iCode = $this->config->item('MY_ECHO_OK');
+        } else {
+            $iCode = $this->config->item('MY_ECHO_FAIL');
+        }	
+		MessageEcho($iCode, "", $jResponse);
+
 	}
 	public function AddMatchTeamFans() {
 		$matchid = $_GET['matchid'];
