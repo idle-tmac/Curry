@@ -43,7 +43,6 @@ class CLogin extends CI_Controller {
 			$message = $this->config->item('MY_BAD_PARAMETER');
             $code = $this->config->item('MY_ECHO_FAIL');
             MessageEcho($code, $message);
-			echo $jsonstr;
 			return;
 		}
 		$loginway = $_POST["loginway"];

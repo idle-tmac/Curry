@@ -69,8 +69,6 @@
 		}
 	}
 	function UpdatePlayerStatistic(&$playerStatistic, $eventTeamid, $playerid, $aStatisticItems, $aMatchStatisticInfo, $iScore){
-		var_dump($aMatchStatisticInfo);
-		//var_dump($aStatisticItems);
 		foreach($aStatisticItems as $sItem) {
 			if(strstr($sItem, "SCORE")) {
 				$playerStatistic[$eventTeamid][$playerid][$aMatchStatisticInfo[$sItem]] += $iScore;

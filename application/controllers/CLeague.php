@@ -238,7 +238,6 @@ i	*/
         $matchid = $_GET['matchid'];
 		$msg = $_GET['param'];
 		$eventInfo = json_decode($msg, true);
-		var_dump( $eventInfo);
 		$eventType = $eventInfo['event_type'];
 		$playerid = $eventInfo['userid'];
 		$playerNo =  $eventInfo['userNo'];
@@ -364,8 +363,6 @@ i	*/
 		$sKey = MY_REDIS_MATCH_LIVE_STATISTIC . "_" . $matchid ;
 		$rRes = $this->redis->get($sKey);
 		$aRes = json_decode($rRes, true);
-		var_dump($aRes);
-		var_dump($aRes['playerstatistic']);
 		$aMatchStatisticInfo = $this->config->item('MY_MATCH_STATISTIC');
 		$aMatchEventInfo = $this->config->item('MY_MATCH_EVENT');
 		$aMatchEventStatisticInfo = $this->config->item('MY_MATCH_EVENT_STATISTIC');
@@ -396,10 +393,12 @@ i	*/
 			default:break;
 		}
 		//把数据再存回去
-		var_dump($aRes);
-		var_dump($aRes['playerstatistic']);
 		$sValue=json_encode($aRes);
-		$this->redis->setex($sKey, self::TTL, $sValue);
+		$bRet = $this->redis->setex($sKey, self::TTL, $sValue);
+		if($bRet) {
+            $code = $this->config->item('MY_ECHO_OK');
+            MessageEcho($code);
+		}
 	}
 	protected function _GenerateLiveText($matchid, $teamid1, $teamid2, $teamName1, $teamName2, $part, $matchPattern, $eventType, $eventTeamid, $playerName) {
 
@@ -425,7 +424,6 @@ i	*/
 
 		#set context
 		$key = MY_REDIS_MATCH_LIVE_MESSAGE . "_" . $matchid . "_" . $ticket;
-		var_dump($message);
 		$this->redis->setex($key, self::TTL, json_encode($message));
 	}
 	protected function _InitializeStatisticRedisArray($sKey, $teamid1, $teamid2){
