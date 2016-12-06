@@ -237,6 +237,8 @@ i	*/
 	public function UploadMatchEvent() {
         $matchid = $_GET['matchid'];
 		$msg = $_GET['param'];
+		echo $msg . "\n";
+		return;
 		$eventInfo = json_decode($msg, true);
 		$eventType = $eventInfo['event_type'];
 		$playerid = $eventInfo['userid'];
