@@ -77,8 +77,10 @@ i	*/
 			$rcell["league_name"] = $cell['name'];
 			$rcell["league_team_num"] = $cell['team_num'];
 			#$rcell["league_fans_num"] = $cell['team_fans'];
-			$typeFlag = 'MY_LEAGUE_TYPE_' . $cell['league_type'];
-			$rcell["league_type"] = $this->config->item($typeFlag);
+			#$typeFlag = 'MY_LEAGUE_TYPE_' . $cell['league_type'];
+			#$rcell["league_type"] = $this->config->item($typeFlag);
+			#$rcell["league_rule"] = $cell['league_rule'];;
+			$rcell["league_type"] = 1;
 			$rcell["league_start_date"] = strtotime($cell['start_time']);
 			$rcell["league_end_date"] = strtotime($cell['end_time']);
 			#$rcell["league_introduction"] = $cell['introduction'];
