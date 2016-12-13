@@ -10,3 +10,11 @@
 		);
 		return $matchPatternMap[$matchPattern][$part];
 	}
+  	
+	function GetSomeStatistic($aStatistic, $item) {
+		$cnt = 0;
+		foreach($aStatistic as $val) {
+			$cnt = $cnt + $val[$item];
+		}
+		return $cnt;
+	}

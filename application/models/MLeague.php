@@ -25,8 +25,18 @@
 			$res = $this->tmacDB->insert_data($sql);
 			return $res;
 		}
+	
+		public function InsertLeagueInfo($aLeagueInfo) {
+			$aFields = array_keys($aLeagueInfo);
+			$aVals = array_values($aLeagueInfo);
+			$sFields = implode(",",$aFields);
+			$sVals = implode(",",$aVals);
+			$sSql = "insert into league (" . $sFields . ") values (" . $sVals . ")";
+			$res = $this->tmacDB->insert_data($sSql);
+			return $res;
+		}
 		public function GetLeagueInfoById($leagueid) {//(cells []map[string]string) {
-        		$sql = "select * from league  where leagueid=$leagueid";
+        	$sql = "select * from league  where leagueid=$leagueid";
 			$res = $this->tmacDB->get_data($sql);
 			if(!$res) {
 				return False;

@@ -29,7 +29,7 @@ class CLeague extends CI_Controller {
 	const NO = 'No'; //球员号码
 	const PLAYERNAME = 'playername'; //球员名字
 		
-	const TTL = 24 * 3600;
+	const TTL = 24 * 3600 * 365;
 
 	public function __construct() {
 		parent::__construct();
@@ -64,7 +64,7 @@ i	*/
 		
 		$rcells = array();
 		$rcell = array();	
-        	$cells = $this->MLeague->GetLeagueInfo($schoolid, $num, $ticket, $type);
+        $cells = $this->MLeague->GetLeagueInfo($schoolid, $num, $ticket, $type);
 		foreach($cells as $cell){
 			$rcell["league_id"] = $cell['leagueid'];
 			#rcell["league_logo_address"] = $imageDir + "/leagueLogoDir/$logoid.jpg";
@@ -77,8 +77,9 @@ i	*/
 			$rcell["league_name"] = $cell['name'];
 			$rcell["league_team_num"] = $cell['team_num'];
 			#$rcell["league_fans_num"] = $cell['team_fans'];
-			$typeFlag = 'MY_LEAGUE_TYPE_' . $cell['league_type'];
-			$rcell["league_type"] = $this->config->item($typeFlag);
+			#$typeFlag = 'MY_LEAGUE_TYPE_' . $cell['league_rule'];
+			#$rcell["league_type"] = $this->config->item($typeFlag);
+			$rcell["league_type"] = $cell['league_rule'];
 			$rcell["league_start_date"] = strtotime($cell['start_time']);
 			$rcell["league_end_date"] = strtotime($cell['end_time']);
 			#$rcell["league_introduction"] = $cell['introduction'];
@@ -206,11 +207,11 @@ i	*/
 		}
 		$ret[$teamid2] = $teaminfo;
 		$jsonstr = json_encode($ret);
-                echo $jsonstr;	
+        echo $jsonstr;	
 	}
 	public function ReqStartData(){
 		$userid = $_GET['userid'];
-        	$matchid = $_GET['matchid'];
+        $matchid = $_GET['matchid'];
 		$failStatus = $this->config->item('MY_ECHO_FAIL');
 		$succStatus = $this->config->item('MY_ECHO_OK');
 		
@@ -234,6 +235,62 @@ i	*/
 
 		MessageEcho($code, $code, "");
 	}
+
+	//统计比赛设置
+	public function SetMatchInfoTool() {
+		$sMatchid = $_GET['matchid'];
+		$aMatchInfo = $this->MMatch->GetMatchInfoByMatchid($sMatchid, ['match_time', 'match_address','match_type', 'match_pattern']);
+		if(empty($aMatchInfo)) {
+			$code = $this->config->item('MY_ECHO_FAIL');
+		} else {
+			$code = $this->config->item('MY_ECHO_OK');
+		}
+		MessageEcho($code, 0, $aMatchInfo);
+	}
+	//获取球队信息
+	public function SetTeamInfoTool() {
+		$sTeamid = $_GET['teamid'];
+		$aUserInfo = $this->MTeam->GetTeamUserInfoByTeamid($sTeamid, ['position', 'playername', 'userno']);
+		if(empty($aUserInfo)) {
+			$code = $this->config->item('MY_ECHO_FAIL');
+		} else {
+			$code = $this->config->item('MY_ECHO_OK');
+		}
+		MessageEcho($code, 0, $aUserInfo);
+	} 
+	public function CreateLeague(){
+		$sUserid = $_GET['userid'];
+		$sMsg = $_GET['param'];
+		$aLeagueInfo = json_decode($sMsg, true);
+		$sLeagueName = $aLeagueInfo['league_name'];
+		$sLeagueAddress = $aLeagueInfo['league_address'];
+		//1 校园 2 业余
+		$sLeagueType = $aLeagueInfo['league_type'];
+		$sLeagueStartTime = $aLeagueInfo['start_time'];
+		$sLeagueEndTime = $aLeagueInfo['end_time'];
+		$sLeagueRule = $aLeagueInfo['league_rule'];
+		$sLeaguePattern = $aLeagueInfo['league_pattern'];
+		$time = GetTime();
+		$aLeagueInfo = array(
+			'createrid' => $sUserid,
+			'name' => "'$sLeagueName'",
+			'address' => "'$sLeagueAddress'",
+			'type' => $sLeagueType,
+			'start_time' => "'$sLeagueStartTime'",
+			'end_time' => "'$sLeagueEndTime'",
+			'league_rule' => "'$sLeagueRule'",
+			'league_match_pattern' => $sLeaguePattern,
+			'create_time' => "'$time'"
+		);
+		$bRet = $this->MLeague->InsertLeagueInfo($aLeagueInfo);
+		if($bRet) {
+			$code = $this->config->item('MY_ECHO_OK');
+		} else {
+			$code = $this->config->item('MY_ECHO_FAIL');
+		}
+		MessageEcho($code);
+
+	}	
 	public function UploadMatchEvent() {
         $matchid = $_GET['matchid'];
 		$msg = $_GET['param'];
@@ -246,7 +303,7 @@ i	*/
 		$teamid2 = $eventInfo['teamid2'];
 		$teamName1 = $eventInfo['teamname1'];
 		$teamName2 = $eventInfo['teamname2'];
-		$matchPattern = $eventInfo['match_pattern'];//3v3什么的
+		$matchPattern = $eventInfo['match_pattern'];//半场制，全场制
 		$part = $eventInfo['part'];
 		$eventTeamid = $eventInfo['event_teamid'];
 
@@ -256,40 +313,69 @@ i	*/
 		}
 		
 		//更新redis
-		$this->_UpdateRedisMatchInfo($matchid, $eventType, $eventTeamid, $part, $playerid);
+		$this->_UpdateRedisMatchInfo($matchid, $eventType, $matchPattern, $eventTeamid, $part, $playerid);
 		
 		//generate text (time score part teamname playerNo playName eventType )
 		$this->_GenerateLiveText($matchid, $teamid1, $teamid2, $teamName1, $teamName2, $part, $matchPattern, $eventType, $eventTeamid, $playerName);
 	}
+/*	public function EndLiveMatch() {
+        $matchid = $_GET['matchid'];
+		$sKey = MY_REDIS_MATCH_LIVE_STATISTIC . "_" . $matchid ;
+		$jStatistic = $this->redis->get($sKey);
+		$aStatistic = json_decode($jStatistic, true);
+		$aMatch = $this->MMatch->GetMatchInfoByMatchid($matchid, ['match_pattern', 'leagueid']);
+		$leagueid = $aMatch['leagueid'];
+		$matchPattern = $aMatch['match_pattern'];
+		#store to match_result
+		foreach($aStatistic[self::TEAMSTATISTIC] as $sTeamid => aTeamStatistic) {
+			$aPlayerStatistic = $aStatistic[self::PLAYERSTATISTIC][$sTeamid];
+ 			$result = array(
+				'matchid' => $matchid,
+  				'teamid' => $sTeamid,
+  				'league_match_pattern' => $matchPattern,
+  				'score' => $aTeamStatistic['score'],
+  				'blackboard' => $aTeamStatistic['blackboard'],
+  				'assist' => $aTeamStatistic['assist'],
+  				'steal' => $aTeamStatistic['steal'],
+  				'block' => $aTeamStatistic['block'],
+				'threepointscore' => $aTeamStatistic['threepointscore'],
+  				'penaltypointscore' => $aTeamStatistic['penaltypointscore'],
+  				'mistake' => $aTeamStatistic['mistake'],
+  				'fouls' => $aTeamStatistic['fouls'],
+  				'okshootcnt' => GetSomeStatistic($aPlayerStatistic, 'okShootCnt'),
+  				'allshootcnt' => GetSomeStatistic($aPlayerStatistic, 'allShootCnt'),
+  				'okpenaltycnt' => GetSomeStatistic($aPlayerStatistic, 'okPenaltyCnt'),
+  				'allpenaltycnt' => GetSomeStatistic($aPlayerStatistic, 'allPenaltyCnt'),
+				'okthirdcnt' => GetSomeStatistic($aPlayerStatistic, 'okThirdCnt'),
+				'allthirdcnt' => GetSomeStatistic($aPlayerStatistic, 'allThirdCnt'),
+ 				'leagueid' => $leagueid, 
+  				'create_time' => strtotime(GetTime())
+			);
+		
+	}*/
 	public function ReqLiveMatchInfo() {
 		$sTeamid1 = $_GET['teamid1'];
 		$sTeamid2 = $_GET['teamid2'];
+		$sMatchid = $_GET['matchid'];
+
 		$aTeaminfo = $this->MTeam->GetTeamInfo($sTeamid1);
 		$sTeamName1 = $aTeaminfo['name'];
 		$aTeaminfo = $this->MTeam->GetTeamInfo($sTeamid2);
 		$sTeamName2 = $aTeaminfo['name'];
+		$aMatch = $this->MMatch->GetMatchInfoByMatchid($sMatchid);
+		$sMatchPattern = $aMatch['match_pattern'];
 		
 		$aUserInfo = $this->MTeam->GetTeamUserInfoByTeamid($sTeamid1, ['teamid', 'userid', 'playername', 'userno']);
-		$aUseRet1 = array();
-		foreach($aUserInfo as $aUser) {
-			$aUseRet1[$aUser['userid']] = array(
-				'username' => $aUser['playername'],
-				'userno' => $aUser['userno']
-			);
-		}
+		$aUseRet1 = $this->_GetMatchUserList($aUserInfo);
 		$aUserInfo = $this->MTeam->GetTeamUserInfoByTeamid($sTeamid2, ['teamid', 'userid', 'playername', 'userno']);
-		$aUseRet2 = array();
-		foreach($aUserInfo as $aUser) {
-			$aUseRet2[$aUser['userid']] = array(
-				'username' => $aUser['playername'],
-				'userno' => $aUser['userno']
-			);
-		}
-	
+		$aUseRet2 = $this->_GetMatchUserList($aUserInfo);
 		$aLiveMatchInfo = array(
+			'matchinfo' => array('match_pattern' => $sMatchPattern),
+			'teaminfo' => array(
 				$sTeamid1 => array('team_name' => $sTeamName1, 'team_members' => $aUseRet1),
 				$sTeamid2 => array('team_name' => $sTeamName2, 'team_members' => $aUseRet2)
-			);
+			)
+		);
 		MessageEcho(1, "", $aLiveMatchInfo);
 
 	}
@@ -367,7 +453,7 @@ i	*/
 		}
 		MessageEcho($code);
 	}
-	protected function _updateRedisMatchInfo($matchid, $eventType, $eventTeamid, $part, $playerid){
+	protected function _updateRedisMatchInfo($matchid, $eventType, $matchPattern, $eventTeamid, $part, $playerid){
 		
 		//update redis array
 		//现在前台给了你一个事件
@@ -386,7 +472,8 @@ i	*/
 			case 3:  #二分命中
 			case 5:  #三分命中
 				$iScore = $aScore[$eventType];
-				UpdateSaiKuang($aRes[self::SAIKUANG],$eventTeamid,$part, $iScore);
+				$sPartName = GetPartName($matchPattern, $part);
+				UpdateSaiKuang($aRes[self::SAIKUANG],$eventTeamid,$sPartName, $iScore);
 			case 7:  #篮板
 			case 9:  #助攻
 				//UpdateBest($aRes[self::BEST],$aRes[self::PLAYERSTATISTIC],$eventTeamid);
@@ -408,9 +495,11 @@ i	*/
 		$sValue=json_encode($aRes);
 		$bRet = $this->redis->setex($sKey, self::TTL, $sValue);
 		if($bRet) {
-            $code = $this->config->item('MY_ECHO_OK');
-            MessageEcho($code);
+			$code = $this->config->item('MY_ECHO_OK');
+		} else {
+			$code = $this->config->item('MY_ECHO_FAIL');
 		}
+		MessageEcho($code);
 	}
 	protected function _GenerateLiveText($matchid, $teamid1, $teamid2, $teamName1, $teamName2, $part, $matchPattern, $eventType, $eventTeamid, $playerName) {
 
@@ -475,6 +564,17 @@ i	*/
 		$sStatisticRedis = json_encode($aStatisticRedis);
 		$this->redis->setex($sKey, self::TTL, $sStatisticRedis);
 	}
+	protected function _GetMatchUserList($aUserInfo) {
+		$aUserRet = array();
+		foreach($aUserInfo as $aUser) {
+			$aUserRet[$aUser['userid']] = array(
+				'username' => $aUser['playername'],
+				'userno' => $aUser['userno']
+			);
+		}
+		return $aUserRet;
+	}
+
 }
 
 	

@@ -8,13 +8,16 @@
 			$this->tmacDB = db_base::getInstance("tmac");
 		}
 		public function GetMatchInfo($leagueid) {//(cells []map[string]string) {
-        		$sql = "select teamid1,teamid2,match_time,match_address,status,matchid from `match` 
-				where leagueid = $leagueid";
+        	$sql = "select teamid1,teamid2,match_time,match_address,status,matchid from `match` where leagueid = $leagueid";
 			$res = $this->tmacDB->get_data($sql);
-        		return $res;
+        	return $res;
 		}
-		public function GetMatchInfoByMatchid($matchid) {//(cells []map[string]string) {
-        		$sql = "select * from `match` where leagueid = $matchid";
+		public function GetMatchInfoByMatchid($matchid, $fields = array()) {//(cells []map[string]string) {
+			if(empty($fields)) {
+        		$sql = "select * from `match` where matchid = $matchid";
+			} else {
+				$sql = "select " . implode(",",$fields) . " from `match` where matchid = $matchid";
+			}
 			$res = $this->tmacDB->get_data($sql);
 			if(empty($res)) {
 				return array();

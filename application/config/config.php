@@ -537,7 +537,7 @@ $config['MY_REDIS_MATCH_LIVE_TICKET'] = 'redis_match_live_ticket';
 $config['MY_LEAGUE_INSCHOOL'] = 1;
 $config['MY_LEAGUE_OUTSCHOOL'] = 2;
 $config['MY_LEAGUE_MY'] = 3;
-#league type
+#league rule 赛制
 $config['MY_LEAGUE_TYPE_1vs1'] = 1;
 $config['MY_LEAGUE_TYPE_2vs2'] = 2;
 $config['MY_LEAGUE_TYPE_3vs3'] = 3;

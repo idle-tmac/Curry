@@ -1,6 +1,9 @@
 <?php
-	function UpdateSaiKuang(&$saiKuang,$eventTeamid,$part,$scoreFlag){
-		$saiKuang[$eventTeamid][$part]+=$scoreFlag;
+	function UpdateSaiKuang(&$saiKuang,$eventTeamid,$partname,$scoreFlag){
+		if(!isset($saiKuang[$eventTeamid][$partname])) {
+			$saiKuang[$eventTeamid][$partname] = 0;
+		}
+		$saiKuang[$eventTeamid][$partname] += $scoreFlag;
 		//return $saiKuang;
 	}
 	//按照得分排序

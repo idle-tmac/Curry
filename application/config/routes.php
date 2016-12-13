@@ -68,7 +68,24 @@ $route['league/live/message?(:any)'] = 'CLeague/ReqMatchLiveMessage';
 $route['league/live/fans?(:any)'] = 'CLeague/AddMatchTeamFans';
 $route['league/live/matchinfo?(:any)'] = 'CLeague/ReqLiveMatchInfo';
 $route['league/live/statistic?(:any)'] = 'CLeague/ReqLiveMatchStatistic';
-$route['league/matchevent?(:any)'] = 'CLeague/UploadMatchEvent';
+$route['league/tool/matchset/matchinfo?(:any)'] = 'CLeague/SetMatchInfoTool';
+$route['league/tool/matchset/teaminfo?(:any)'] = 'CLeague/SetTeamInfoTool';
+$route['league/tool/matchevent?(:any)'] = 'CLeague/UploadMatchEvent';
+$route['league/tool/endmatch?(:any)'] = 'CLeague/EndLiveMatch';
+$route['league/create?(:any)'] = 'CLeague/CreateLeague';
+
+/*team*/
+$route['team/create?(:any)'] = 'CTeam/CreateTeam';
+$route['team/teaminfo/head?(:any)'] = 'CTeam/ReqTeamHead';
+$route['team/teaminfo/fans?(:any)'] = 'CTeam/AddTeamFans';
+$route['team/teaminfo/dongtai?(:any)'] = 'CTeam/ReqTeamDongtai';
+$route['team/teaminfo/statistic?(:any)'] = 'CTeam/ReqTeamStatistic';
+$route['team/teaminfo/member?(:any)'] = 'CTeam/ReqTeamMembers';
+$route['team/teaminfo/glory?(:any)'] = 'CTeam/ReqTeamGlory';
+$route['team/teaminfo/manage?(:any)'] = 'CTeam/TeamManage';
+$route['team/teaminfo/join?(:any)'] = 'CTeam/TeamJoin';
+
+
 /*register*/
 $route['register/verifycode?(:any)'] = 'CRegister/RegisterDeal';  #post api
 $route['register/userinfo?(:any)'] = 'CRegister/RegisterPasswdUpLoad'; #post api

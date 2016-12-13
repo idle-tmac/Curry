@@ -39,8 +39,8 @@
 			$sql = "select leagueid from user_league_fans where userid=$userid";
 			$res = $this->tmacDB->get_data($sql);
 			if(empty($res)) {
-                                return array();
-                        }
+                return array();
+            }
 			$ret = array();
 			foreach($res  as $item) {
 				$ret[] = $item['leagueid'];
@@ -56,5 +56,31 @@
 			$sql = "insert into user_league_fans(userid, leagueid) values($userid, $leagueid)";
 			$ret = $this->tmacDB->insert_data($sql);
 			return $ret;
+		}
+		public function GetUserTeamFans($userid){
+			$sql = "select teamid from user_team_fans where userid=$userid";
+			$res = $this->tmacDB->get_data($sql);
+			if(empty($res)) {
+                return array();
+            }
+			$ret = array();
+			foreach($res  as $item) {
+				$ret[] = $item['teamid'];
+			}
+			return $ret;
+		}
+		public function DelUserTeamFans($userid, $teamid) {
+			$sql = "delete from user_team_fans where userid=$userid and teamid=$teamid";
+			$ret = $this->tmacDB->insert_data($sql);
+			$sql = "update team set fans_num=fans_num-1 where teamid=$teamid";
+			$ret2 = $this->tmacDB->insert_data($sql);
+			return $ret && $ret2;
+		}
+		public function AddUserTeamFans($userid, $teamid) {
+			$sql = "insert into user_team_fans(userid, teamid) values($userid, $teamid)";
+			$ret1 = $this->tmacDB->insert_data($sql);
+			$sql = "update team set fans_num=fans_num+1 where teamid=$teamid";
+			$ret2 = $this->tmacDB->insert_data($sql);
+			return $ret1 && $ret2;
 		}
 	}
