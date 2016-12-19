@@ -42,3 +42,19 @@
 		}	
 		return $type;
 	}
+	function ReveseArray($arr) {
+		$aRet = array();	
+		foreach($arr as $item) {
+			$aKeys = array_keys($item);	
+			break;
+		}
+		foreach($arr as $item) {
+			foreach($item as $key => $val) {
+				if(!isset($aRet[$key])) {
+					$aRet[$key] = array();
+				}
+				$aRet[$key][] = $val;
+			}
+		}
+		return $aRet;
+	}

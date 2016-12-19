@@ -53,4 +53,16 @@
 			$res = $this->tmacDB->insert_data($sSql);
 			return $res;
 		}
+		public function GetTeamGlory($teamid, $fields = array()){
+			if(empty($fields)) {
+        		$sql = "select * from team_glory where  teamid = $teamid";
+			} else {
+				$sql = "select " . implode(",",$fields) . " from team_glory where  teamid = $teamid";
+			}
+			$res = $this->tmacDB->get_data($sql);
+			if(empty($res)) {
+				return array();
+			}
+        	return $res;
+		}
  	}

@@ -83,4 +83,30 @@
 			$ret2 = $this->tmacDB->insert_data($sql);
 			return $ret1 && $ret2;
 		}
+		public function DelUserMatchFans($userid, $matchid) {
+			$sql = "delete from user_match_fans where userid=$userid and matchid=$matchid";
+			$ret = $this->tmacDB->insert_data($sql);
+			$sql = "update `match` set fans_num=fans_num-1 where matchid=$matchid";
+			$ret2 = $this->tmacDB->insert_data($sql);
+			return $ret && $ret2;
+		}
+		public function AddUserMatchFans($userid, $matchid) {
+			$sql = "insert into user_match_fans(userid, matchid) values($userid, $matchid)";
+			$ret1 = $this->tmacDB->insert_data($sql);
+			$sql = "update `match` set fans_num=fans_num+1 where matchid=$matchid";
+			$ret2 = $this->tmacDB->insert_data($sql);
+			return $ret1 && $ret2;
+		}
+		public function GetUserMatchFans($userid){
+			$sql = "select matchid from `user_match_fans` where userid=$userid";
+			$res = $this->tmacDB->get_data($sql);
+			if(empty($res)) {
+                return array();
+            }
+			$ret = array();
+			foreach($res  as $item) {
+				$ret[] = $item['matchid'];
+			}
+			return $ret;
+		}
 	}

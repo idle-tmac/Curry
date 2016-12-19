@@ -74,6 +74,10 @@ $route['league/tool/matchevent?(:any)'] = 'CLeague/UploadMatchEvent';
 $route['league/tool/endmatch?(:any)'] = 'CLeague/EndLiveMatch';
 $route['league/create?(:any)'] = 'CLeague/CreateLeague';
 
+/*match*/
+$route['match/matchinfo/fans?(:any)'] = 'CMatch/AddMatchFans';
+
+
 /*team*/
 $route['team/create?(:any)'] = 'CTeam/CreateTeam';
 $route['team/teaminfo/head?(:any)'] = 'CTeam/ReqTeamHead';

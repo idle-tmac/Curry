@@ -37,6 +37,7 @@
 		}
 		public function GetLeagueInfoById($leagueid) {//(cells []map[string]string) {
         	$sql = "select * from league  where leagueid=$leagueid";
+			echo $sql . "\n";
 			$res = $this->tmacDB->get_data($sql);
 			if(!$res) {
 				return False;

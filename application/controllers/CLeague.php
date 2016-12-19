@@ -319,41 +319,48 @@ i	*/
 		//generate text (time score part teamname playerNo playName eventType )
 		$this->_GenerateLiveText($matchid, $teamid1, $teamid2, $teamName1, $teamName2, $part, $matchPattern, $eventType, $eventTeamid, $playerName);
 	}
-/*	public function EndLiveMatch() {
+	public function EndLiveMatch() {
         $matchid = $_GET['matchid'];
 		$sKey = MY_REDIS_MATCH_LIVE_STATISTIC . "_" . $matchid ;
 		$jStatistic = $this->redis->get($sKey);
 		$aStatistic = json_decode($jStatistic, true);
 		$aMatch = $this->MMatch->GetMatchInfoByMatchid($matchid, ['match_pattern', 'leagueid']);
 		$leagueid = $aMatch['leagueid'];
+		//1:半场制2.四节制3.多节制
 		$matchPattern = $aMatch['match_pattern'];
 		#store to match_result
-		foreach($aStatistic[self::TEAMSTATISTIC] as $sTeamid => aTeamStatistic) {
+		$aTeamStatistics = $aStatistic[self::TEAMSTATISTIC];
+		foreach($aTeamStatistics as $sTeamid => $aTeamStatistic) {
 			$aPlayerStatistic = $aStatistic[self::PLAYERSTATISTIC][$sTeamid];
- 			$result = array(
-				'matchid' => $matchid,
-  				'teamid' => $sTeamid,
-  				'league_match_pattern' => $matchPattern,
-  				'score' => $aTeamStatistic['score'],
-  				'blackboard' => $aTeamStatistic['blackboard'],
-  				'assist' => $aTeamStatistic['assist'],
-  				'steal' => $aTeamStatistic['steal'],
-  				'block' => $aTeamStatistic['block'],
-				'threepointscore' => $aTeamStatistic['threepointscore'],
-  				'penaltypointscore' => $aTeamStatistic['penaltypointscore'],
-  				'mistake' => $aTeamStatistic['mistake'],
-  				'fouls' => $aTeamStatistic['fouls'],
-  				'okshootcnt' => GetSomeStatistic($aPlayerStatistic, 'okShootCnt'),
-  				'allshootcnt' => GetSomeStatistic($aPlayerStatistic, 'allShootCnt'),
-  				'okpenaltycnt' => GetSomeStatistic($aPlayerStatistic, 'okPenaltyCnt'),
-  				'allpenaltycnt' => GetSomeStatistic($aPlayerStatistic, 'allPenaltyCnt'),
-				'okthirdcnt' => GetSomeStatistic($aPlayerStatistic, 'okThirdCnt'),
-				'allthirdcnt' => GetSomeStatistic($aPlayerStatistic, 'allThirdCnt'),
- 				'leagueid' => $leagueid, 
-  				'create_time' => strtotime(GetTime())
-			);
-		
-	}*/
+			$sTime = GetTime();
+			$result = array(
+					'matchid' => $matchid, 
+					'teamid' => $sTeamid,
+					'score' => $aTeamStatistic['score'],
+					'league_match_pattern' => $matchPattern,
+					'blackboard' => $aTeamStatistic['blackboard'],
+					'assist' => $aTeamStatistic['assist'],
+					'steal' => $aTeamStatistic['steal'],
+					'block' => $aTeamStatistic['block'],
+					'threepointscore' => $aTeamStatistic['threepointscore'],
+					'penaltypointscore' => $aTeamStatistic['penaltypointscore'],
+					'mistake' => $aTeamStatistic['mistake'],
+					'fouls' => $aTeamStatistic['fouls'],
+					'okshootcnt' => GetSomeStatistic($aPlayerStatistic, 'okShootCnt'),
+					'allshootcnt' => GetSomeStatistic($aPlayerStatistic, 'allShootCnt'),
+					'okpenaltycnt' => GetSomeStatistic($aPlayerStatistic, 'okPenaltyCnt'),
+					'allpenaltycnt' => GetSomeStatistic($aPlayerStatistic, 'allPenaltyCnt'),
+					'okthirdcnt' => GetSomeStatistic($aPlayerStatistic, 'okThirdCnt'),
+					'allthirdcnt' => GetSomeStatistic($aPlayerStatistic, 'allThirdCnt'),
+					'leagueid' => $leagueid,
+					'create_time' => "'$sTime'"
+				);
+				$this->MMatch->InsertMatchInfo($result);
+		}
+		$this->MMatch->SetMatchStatus($matchid, 1);
+		$iCode = $this->config->item('MY_ECHO_OK');
+		MessageEcho($iCode);
+	}
 	public function ReqLiveMatchInfo() {
 		$sTeamid1 = $_GET['teamid1'];
 		$sTeamid2 = $_GET['teamid2'];

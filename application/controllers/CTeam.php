@@ -39,6 +39,7 @@ class CTeam extends CI_Controller {
 		$this->load->model("MTeam");
 		$this->load->model("MRedis");
 		$this->load->model("MMTeam");
+		$this->load->config('config_ability', TRUE);
 		$this->redis = $this->MRedis->_getInstance();
 	}	
 
@@ -125,6 +126,145 @@ class CTeam extends CI_Controller {
 	//$route['team/teaminfo/dongtai?(:any)'] = 'CTeam/ReqTeamDongtai';
 	public function  ReqTeamDongtai(){
 		$sTeamid = $_GET['teamid'];
-		$aTeamMatchInfo = $this->MTeam->GetTeamMatchInfo($sTeamid, []); 
+		$aTeamMatchInfo = $this->MTeam->GetTeamMatchInfo($sTeamid); 
+		$ret = array();
+		foreach($aTeamMatchInfo as $aMatchinfo) {
+			$sMatchid = $aMatchinfo['matchid'];
+			$sTeamid1 = $aMatchinfo['teamid1'];
+			$sTeamid2 = $aMatchinfo['teamid2'];
+			#get score 
+			$aScore = $this->MMatch->GetMatchScoreInfo($sMatchid);
+			if(empty($aScore)) {
+				$aScore["$sTeamid1"] = 0;
+				$aScore["$sTeamid2"] = 0;
+			}
+			$teamInfo = array();	
+			$res = $this->MTeam->GetTeamInfo($sTeamid1, ['name', 'logoid']);
+			$teamInfo[] = array('teamid'=> $sTeamid1, 'name' => $res['name'], 'score' => $aScore["$sTeamid1"]);
+			$res = $this->MTeam->GetTeamInfo($sTeamid2, ['name', 'logoid']);
+			$teamInfo[] = array('teamid'=> $sTeamid1, 'name' => $res['name'], 'score' => $aScore["$sTeamid2"]);
+			
+			//$teamName = $aMatchinfo[''];
+			$MatchTime = $aMatchinfo['match_time'];
+			$MatchStatus = $aMatchinfo['status'];
+			$MatchFansNum = $aMatchinfo['fans_num'];
+			$MatchAddress = $aMatchinfo['match_address'];
+			$ret[] = array(
+				'match_time' => $MatchTime,
+				'match_status' => $MatchStatus,
+				'match_focus_num' => $MatchFansNum,
+				'match_address' => $MatchAddress,
+				'teaminfo' => $teamInfo
+			);
+		}
+		MessageEcho(1, "", $ret);
+	}
+	public function ReqTeamStatistic() {
+		$sTeamid = $_GET['teamid'];
+		$aTeamAbility  = $this->config->item('team_ability', 'config_ability');	
+		
+		$aResponse = array();
+		
+		$aTeamInfo = $this->MMatch->GetTeamMatchResultInfoByTeamid($sTeamid, ['left(create_time,4) as year', 'substring(create_time, 6, 5) as date', 'score', 'blackboard', 'assist', 'steal', 'block', 'mistake', 'okshootcnt', 'allshootcnt', 'okthirdcnt', 'allthirdcnt', 'okpenaltycnt', 'allpenaltycnt', 'matchid' ]);
+		$aAbility = array();
+		$aTeamYearInfo = array();
+		foreach($aTeamInfo as $yearInfo) {
+			$aTeamYearInfo[$yearInfo['year']][] = $yearInfo;
+		}
+		$response = array();
+		foreach($aTeamYearInfo as $year => $teamInfo) {
+			if(!isset($aAbility[$year])) {
+				$aAbility[$year] = array();
+			}
+	
+			# reverse 
+			$aReverseInfo = ReveseArray($teamInfo);	
+
+			#get zhu xing 
+			$zhuXing = array();
+			$aZhuxingKey = array('score', 'blackboard', 'assist', 'steal', 'block');
+			foreach($aZhuxingKey as $key ) {
+				$val = $aReverseInfo[$key];
+				$aItem = array();
+				$aItem[$key] = array_sum($val) / count($val);
+				$aItem['ratio'] = $aItem[$key] / $aTeamAbility[$key];
+				$zhuXing[] = $aItem;
+			}
+			# get match 
+			$aMatchInfo = array();
+			foreach($teamInfo as $matchInfo) {
+				$sMatchid = $matchInfo['matchid'];
+				$aTeams = $this->MMatch->GetMatchInfoByMatchid($sMatchid, ['teamid1', 'teamid2']);
+				$oppTeamid = ($aTeams['teamid1'] == $sTeamid ? $aTeams['teamid2'] : $aTeams['teamid1']);
+				$aScore = $this->MMatch->GetMatchScoreInfo($sMatchid);
+				$sScoreStr = $aScore[$sTeamid] . "-" . $aScore[$oppTeamid];
+				$aOppName = $this->MTeam->GetTeamInfo($oppTeamid, ['name']);
+				$shootrate = ($matchInfo['okshootcnt'] == 0 ? 0 : $matchInfo['okshootcnt']/$matchInfo['allshootcnt']);
+				$threerate = ($matchInfo['okthirdcnt'] == 0 ? 0 : $matchInfo['okthirdcnt']/$matchInfo['allthirdcnt']);
+				$penaltyrate = ($matchInfo['okpenaltycnt'] == 0 ? 0 : $matchInfo['okpenaltycnt']/$matchInfo['allpenaltycnt']);
+				
+				$aMatchInfo[] = array(
+					'date' => $matchInfo['date'],
+					'score' => $sScoreStr,
+					'opponents' => $aOppName['name'],
+					'blackboard' => $matchInfo['blackboard'], 
+					'assist' => $matchInfo['assist'],
+					'steal' => $matchInfo['steal'], 
+					'block' => $matchInfo['block'],
+					'mistake' => $matchInfo['mistake'],
+					'shootrate' => $shootrate, 
+					'threerate' => $threerate, 
+					'penaltyrate' => $penaltyrate
+				);
+			}
+			#get average
+			$aAverageKey1 = array('score', 'blackboard', 'assist', 'steal', 'block', 'mistake');
+			$aAverageKey2 = array('okshootcnt', 'allshootcnt', 'okthirdcnt', 'allthirdcnt', 'okpenaltycnt', 'allpenaltycnt');
+			$aMatchAverage = array();
+			foreach($aAverageKey1 as $key) {
+				$val = $aReverseInfo[$key];
+                $aMatchAverage[$key] = array_sum($val) / count($val);
+            }
+			$okshootcnt = array_sum($aReverseInfo['okshootcnt']);
+			$allshootcnt = array_sum($aReverseInfo['allshootcnt']);
+			$okthirdcnt = array_sum($aReverseInfo['okthirdcnt']);
+			$allthirdcnt = array_sum($aReverseInfo['allthirdcnt']);
+			$okpenaltycnt = array_sum($aReverseInfo['okpenaltycnt']);
+			$allpenaltycnt = array_sum($aReverseInfo['allpenaltycnt']);
+
+			$shootrate = ($okshootcnt == 0 ? 0 : $okshootcnt/$allshootcnt);
+            $aMatchAverage['shootrate'] = $shootrate;
+			$threerate = ($okthirdcnt ==0 ? 0: $okthirdcnt/$allthirdcnt);
+			$aMatchAverage['threerate'] = $threerate;
+			$penaltyrate = ($okpenaltycnt == 0 ? 0: $okpenaltycnt/$allpenaltycnt);
+			$aMatchAverage['penaltyrate'] = $penaltyrate;
+			$yearAbility = array('diagram' => $zhuXing, 'match' => $aMatchInfo, 'average' => $aMatchAverage);
+			$response[$year] = $yearAbility;
+		}
+		MessageEcho(1, "", $response);
+	}
+	public  function ReqTeamMembers() {
+		$sTeamid = $_GET['teamid'];
+		$aTeamUserInfo = $this->MTeam->GetTeamUserInfoByTeamid($sTeamid, ['playername', 'userno', 'position']);
+		MessageEcho(1, "", $aTeamUserInfo);
+	}
+	public  function ReqTeamGlory() {
+		$sTeamid = $_GET['teamid'];
+		$aTeamGlory = $this->MTeam->GetTeamGlory($sTeamid, ['leagueid', 'glory', 'left(create_time,4) as year']);
+		$response = array();
+		foreach($aTeamGlory as $aItem) {
+			$sYear = $aItem['year'];
+			$leagueid = $aItem['leagueid'];
+			echo $leagueid . "\n";
+			$glory = ($aItem['glory'] == 1 ? '冠军' : ($aItem['glory'] == 2 ? '亚军' : '季军'));
+			$aRet = $this->MLeague->GetLeagueInfoById($leagueid);
+			$name = $aRet['name'];
+			$response[] = array(
+				'league_name' => $name,
+				'year' => $sYear,
+				'glory' => $glory
+			);
+		}
+		MessageEcho(1, "", $response);
 	}
 }
