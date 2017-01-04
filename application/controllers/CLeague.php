@@ -328,6 +328,7 @@ i	*/
 		$leagueid = $aMatch['leagueid'];
 		//1:半场制2.四节制3.多节制
 		$matchPattern = $aMatch['match_pattern'];
+
 		#store to match_result
 		$aTeamStatistics = $aStatistic[self::TEAMSTATISTIC];
 		foreach($aTeamStatistics as $sTeamid => $aTeamStatistic) {
@@ -355,9 +356,40 @@ i	*/
 					'leagueid' => $leagueid,
 					'create_time' => "'$sTime'"
 				);
-				$this->MMatch->InsertMatchInfo($result);
+				#$this->MMatch->InsertMatchInfo($result);
 		}
-		$this->MMatch->SetMatchStatus($matchid, 1);
+		#$this->MMatch->SetMatchStatus($matchid, 1);
+		
+		#store to user_statistic
+		
+		foreach($aStatistic[self::PLAYERSTATISTIC] as $sTeamid => $aTeamInfo) {
+			foreach($aTeamInfo as $sUserid => $UserInfo) {
+				$aUserInfoDb = array();
+				$sTime = GetTime();
+				$aUserInfoDb['matchid'] = $matchid; 
+				$aUserInfoDb['teamid'] = $sTeamid;
+				$aUserInfoDb['userid'] = $sUserid;
+				$aUserInfoDb['leagueid'] = $leagueid;
+				$aUserInfoDb['league_match_pattern'] = $matchPattern;
+				$aUserInfoDb['score'] = $UserInfo['score'];
+				$aUserInfoDb['assist'] = $UserInfo['assist'];
+				$aUserInfoDb['blackboard'] = $UserInfo['blackboard'];
+				$aUserInfoDb['steal'] = $UserInfo['steal'];
+				$aUserInfoDb['block'] = $UserInfo['block'];
+				$aUserInfoDb['mistake'] = $UserInfo['mistake'];
+				$aUserInfoDb['fouls'] = $UserInfo['fouls'];
+				$aUserInfoDb['threepointscore'] = $UserInfo['okThirdCnt'] * 3 ;
+				$aUserInfoDb['penaltypointscore'] = $UserInfo['okPenaltyCnt'];
+				$aUserInfoDb['okshootcnt'] = $UserInfo['okShootCnt'];
+				$aUserInfoDb['allshootcnt'] = $UserInfo['allShootCnt'];
+				$aUserInfoDb['okpenaltycnt'] = $UserInfo['okPenaltyCnt'];
+				$aUserInfoDb['allpenaltycnt'] = $UserInfo['allPenaltyCnt'];
+				$aUserInfoDb['okthirdcnt'] = $UserInfo['okThirdCnt'];
+				$aUserInfoDb['allthirdcnt'] = $UserInfo['allThirdCnt'];
+				$aUserInfoDb['create_time'] = "'$sTime'";
+				$this->MLeague->InsertUserMatchResultInfo($aUserInfoDb);
+			}
+		}
 		$iCode = $this->config->item('MY_ECHO_OK');
 		MessageEcho($iCode);
 	}

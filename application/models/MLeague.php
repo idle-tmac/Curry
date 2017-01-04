@@ -35,9 +35,18 @@
 			$res = $this->tmacDB->insert_data($sSql);
 			return $res;
 		}
+		public function InsertUserMatchResultInfo($aUserMatchInfo) {
+			$aFields = array_keys($aUserMatchInfo);
+			$aVals = array_values($aUserMatchInfo);
+			$sFields = implode(",",$aFields);
+			$sVals = implode(",",$aVals);
+			$sSql = "insert into match_user_result (" . $sFields . ") values (" . $sVals . ")";
+			#echo $sSql . "\n";
+			$res = $this->tmacDB->insert_data($sSql);
+			return $res;
+		}
 		public function GetLeagueInfoById($leagueid) {//(cells []map[string]string) {
         	$sql = "select * from league  where leagueid=$leagueid";
-			echo $sql . "\n";
 			$res = $this->tmacDB->get_data($sql);
 			if(!$res) {
 				return False;

@@ -77,6 +77,13 @@ $route['league/create?(:any)'] = 'CLeague/CreateLeague';
 /*match*/
 $route['match/matchinfo/fans?(:any)'] = 'CMatch/AddMatchFans';
 
+/*user*/
+$route['user/userinfo/head?(:any)'] = 'CUser/ReqUserHead';
+$route['user/userinfo/fans?(:any)'] = 'CUser/AddUserFans';
+$route['user/userinfo/battle?(:any)'] = 'CUser/ReqUserBattle';
+$route['user/userinfo/statistic?(:any)'] = 'CUser/ReqUserStatistic';
+$route['user/userinfo/join?(:any)'] = 'CUser/ReqUserJoinTeamLeague';
+$route['user/userinfo/manage?(:any)'] = 'CUser/UserManage';
 
 /*team*/
 $route['team/create?(:any)'] = 'CTeam/CreateTeam';

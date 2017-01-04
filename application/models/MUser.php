@@ -8,13 +8,36 @@
 			$this->tmacDB = db_base::getInstance("tmac");
 		}
 		public function GetUserInfo($phone){
-	
 			$sql = "select * from user where phone=$phone";
 			$res = $this->tmacDB->get_data($sql);
 			if(empty($res)) {
 				return array();
 			}
 			return  $res[0];
+		}
+		public function GetUserInfoByUserid($userid, $fields = array()){
+			if(empty($fields)) {
+                $sql = "select * from user where userid = $userid";
+            } else {
+                $sql = "select " . implode(",",$fields) . " from user where userid = $userid";
+            }
+			$res = $this->tmacDB->get_data($sql);
+			if(empty($res)) {
+				return array();
+			}
+			return  $res[0];
+		}
+		public function GetTeamUserInfoByUserid($userid, $fields = array()){
+			if(empty($fields)) {
+        		$sql = "select * from user_team where userid = $userid";
+			} else {
+				$sql = "select " . implode(",",$fields) . " from user_team where userid = $userid";
+			}
+			$res = $this->tmacDB->get_data($sql);
+			if(empty($res)) {
+				return array();
+			}
+        	return $res;
 		}
 		public function UpdateUserPassword($phone,$password) {
 			$sql = "update user set passwd=$password where phone=$phone";
@@ -34,6 +57,33 @@
 				return array();
 			}
 			return $res[0];
+		}
+		
+		public function GetUserUserFans($userid){
+			$sql = "select ownerid from user_user_fans where userid=$userid";
+			$res = $this->tmacDB->get_data($sql);
+			if(empty($res)) {
+                return array();
+            }
+			$ret = array();
+			foreach($res  as $item) {
+				$ret[] = $item['ownerid'];
+			}
+			return $ret;
+		}
+		public function DelUserUserFans($userid, $ownerid) {
+			$sql = "delete from user_user_fans where userid=$userid and ownerid=$ownerid";
+			$ret = $this->tmacDB->insert_data($sql);
+			$sql = "update user set fans_num=fans_num-1 where userid=$ownerid";
+			$ret2 = $this->tmacDB->insert_data($sql);
+			return $ret && $ret2;
+		}
+		public function AddUserUserFans($userid, $ownerid) {
+			$sql = "insert into user_user_fans(userid, ownerid) values($userid, $ownerid)";
+			$ret1 = $this->tmacDB->insert_data($sql);
+			$sql = "update user set fans_num=fans_num+1 where userid=$ownerid";
+			$ret2 = $this->tmacDB->insert_data($sql);
+			return $ret1 && $ret2;
 		}
 		public function GetUserLeagueFans($userid){
 			$sql = "select leagueid from user_league_fans where userid=$userid";
@@ -109,4 +159,13 @@
 			}
 			return $ret;
 		}
+		public function GetUserMatchResultInfo($sUserid, $fields = array()){
+            if(empty($fields)) {
+                $sSql = "select * from match_user_result where userid = $sUserid";
+            } else {
+                $sSql = "select " . implode(",",$fields) . " from match_user_result where userid = $sUserid";
+            }
+			$res = $this->tmacDB->get_data($sSql);
+            return $res;
+        }
 	}

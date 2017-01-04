@@ -36,7 +36,7 @@
 			if(empty($aFields)) {
 				$sSql = "select * from `match` where (teamid1=$teamid or teamid2=$teamid);";
 			} else {
-				$sSql = "select " . implode(",",$fields) . " from `match` where  (teamid1=$teamid or teamid2=$teamid);";
+				$sSql = "select " . implode(",", $aFields) . " from `match` where  (teamid1=$teamid or teamid2=$teamid);";
 			}
 			$res = $this->tmacDB->get_data($sSql);
 			if(empty($res)) {
