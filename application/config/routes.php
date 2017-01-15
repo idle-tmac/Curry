@@ -84,6 +84,9 @@ $route['user/userinfo/battle?(:any)'] = 'CUser/ReqUserBattle';
 $route['user/userinfo/statistic?(:any)'] = 'CUser/ReqUserStatistic';
 $route['user/userinfo/join?(:any)'] = 'CUser/ReqUserJoinTeamLeague';
 $route['user/userinfo/manage?(:any)'] = 'CUser/UserManage';
+$route['user/userinfo/setinfo?(:any)'] = 'CUser/UserInfoSet';
+$route['user/userinfo/readinfo?(:any)'] = 'CUser/UserInfoRead';
+
 
 /*team*/
 $route['team/create?(:any)'] = 'CTeam/CreateTeam';
@@ -93,7 +96,14 @@ $route['team/teaminfo/dongtai?(:any)'] = 'CTeam/ReqTeamDongtai';
 $route['team/teaminfo/statistic?(:any)'] = 'CTeam/ReqTeamStatistic';
 $route['team/teaminfo/member?(:any)'] = 'CTeam/ReqTeamMembers';
 $route['team/teaminfo/glory?(:any)'] = 'CTeam/ReqTeamGlory';
-$route['team/teaminfo/manage?(:any)'] = 'CTeam/TeamManage';
+$route['team/teaminfo/manage/read?(:any)'] = 'CTeam/TeamManageRead';
+$route['team/teaminfo/manage/set?(:any)'] = 'CTeam/TeamManageSet';
+$route['team/teaminfo/manage/members?(:any)'] = 'CTeam/TeamManageMembers';
+$route['team/teaminfo/manage/acceptmember?(:any)'] = 'CTeam/TeamManageAcceptMembers';
+$route['team/teaminfo/manage/deletemember?(:any)'] = 'CTeam/TeamManageDeleteMembers';
+$route['team/teaminfo/manage/adminitors?(:any)'] = 'CTeam/TeamManageAdminitors';
+$route['team/teaminfo/manage/deleteadminitor?(:any)'] = 'CTeam/TeamManageDeleteAdminitor';
+$route['team/teaminfo/manage/addadminitor?(:any)'] = 'CTeam/TeamManageAddAdminitor';
 $route['team/teaminfo/join?(:any)'] = 'CTeam/TeamJoin';
 
 

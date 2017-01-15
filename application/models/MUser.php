@@ -168,4 +168,21 @@
 			$res = $this->tmacDB->get_data($sSql);
             return $res;
         }
+		public function InsertLeagueInfo($sUserid, $aUserInfo) {
+			$aFields = array_keys($aUserInfo);
+			$aVals = array_values($aUserInfo);
+			$sSql = "update user set ";
+			$bFisrt = True;
+			foreach($aUserInfo as $sField => $sVal) {
+				if($bFisrt) {
+					$sSql = $sSql . $sField . " = " . $sVal;
+					$bFisrt = False;
+				}else {
+					$sSql = $sSql . ", " . $sField . " = " . $sVal;
+				}
+			}
+			$sSql =  $sSql . " where userid = $sUserid;";
+			$res = $this->tmacDB->insert_data($sSql);
+			return $res;
+		}
 	}

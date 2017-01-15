@@ -68,9 +68,113 @@ class CTeam extends CI_Controller {
 		}
 		MessageEcho($code);
 	}
-	public function TeamManage() {
-
-
+	public function TeamManageRead() {
+		$sTeamid = $_GET['teamid'];
+		$aTeamInfo = $this->MTeam->GetTeamInfo($sTeamid,	['name', 'address', 'createrid', 'createrid', 'introduction']);
+		$sCreaterid = $aTeamInfo['createrid'];
+		$aUser = $this->MUser->GetUserInfoByUserid($sCreaterid, ['username']);
+		$sUserName = $aUser['username'];
+		$aResponse = array(
+			'name' => $aTeamInfo['name'],
+			'address' => $aTeamInfo['address'],
+			'creater' => $sUserName,
+			'adminitor' => $sUserName,
+			'introduction' => $aTeamInfo['introduction'],
+		);
+		MessageEcho(1, "", $aResponse);
+	}
+	public function TeamManageSet(){
+		$sTeamid = $_GET['teamid'];
+		$sTeaminfoItem = $_GET['type'];
+		$sText = $_GET['text'];
+	 	$aTeamInfoMap = array(
+            "",
+            'name',
+            'address',
+			'introduction'
+        );
+		$aUpdateInfo = array($aTeamInfoMap[$sTeaminfoItem] => "'$sText'");
+		$bRet = $this->MTeam->UpdateTeamInfo($sTeamid, $aUpdateInfo);
+		if($bRet) {
+			MessageEcho(1);
+		} else {
+			MessageEcho(0);	
+		}
+	}
+	public function TeamManageMembers(){
+		$sTeamid = $_GET['teamid'];
+		$sType = 1;
+		$aApplication = $this->MTeam->GetJoinApplication($sTeamid, $sType);
+		$aAppInfo = array();
+		foreach($aApplication as $aItem) {
+			$sWantJoinid = $aItem['wantjoinid'];
+			$sJoinid = $aItem['joinid'];
+		 	$sStatus = $aItem['status'];
+			if($sStatus == 1) {
+				$aUserInfo = $this->MUser->GetUserInfoByUserid($sJoinid, ['username', 'position']);
+				$aAppInfo[] = $aUserInfo;
+			}
+		}
+		$aTeamUserInfo = $this->MTeam->GetTeamUserInfoByTeamid($sTeamid, ['playername', 'position']);
+		$aResponse = array('application' => $aAppInfo, 'hasmembers' => $aTeamUserInfo);
+        MessageEcho(1, "", $aResponse);
+	}
+	public function TeamManageDeleteMembers(){
+		$sTeamid = $_GET['teamid'];
+		$sUserid = $_GET['userid'];
+		$bRet = $this->MTeam->DeleteTeamUserInfo($sTeamid, $sUserid);	
+		if($bRet) {
+			MessageEcho(1);
+		} else {
+			MessageEcho(0);	
+		}
+	}
+	public function TeamManageAcceptMembers(){
+		$sTeamid = $_GET['teamid'];
+		$sUserid = $_GET['userid'];
+		
+		#get userinfo
+		$aUserInfo = $this->MUser->GetUserInfoByUserid($sUserid, ['username', 'position', 'playerno']);
+		$sTime = GetTime();
+		$sName = $aUserInfo['username'];
+		$sNo = $aUserInfo['playerno'];
+		$sPosition = $aUserInfo['position'];
+		
+		#update user_team table
+		$aUserTeamInfo = array(
+			'teamid' => $sTeamid,
+			'userid' => $sUserid,
+			'playername' => "'$sName'",
+			'userno' => "'$sNo'",
+			'position' => "'$sPosition'",
+			'create_time' => "'$sTime'"
+		);
+		$bRet = $this->MTeam->InsertUserTeamInfo($aUserTeamInfo);
+		if($bRet) {
+			MessageEcho(1);
+		} else {
+			MessageEcho(0);	
+		}
+		
+	}
+	public function TeamJoin(){
+		$sUserid = $_GET['userid'];
+		$sTeamid = $_GET['teamid'];
+		$sTime = GetTime();
+		$aJoinItem = array(
+			'wantjoinid' => $sTeamid,
+  			'joinid' => $sUserid,
+ 			'type' => 1,
+			'status' => 1,
+			'create_time' => "'$sTime'",
+			'modify_time' => "'$sTime'"
+		);
+		$bRet = $this->MTeam->InsertJoinApplication($aJoinItem);
+		if($bRet) {
+			MessageEcho(1);
+		} else {
+			MessageEcho(0);
+		}
 	}
 #$route['team/teaminfo/head?(:any)'] = 'CTeam/ReqTeamHead';
 	public function ReqTeamHead() {
@@ -266,5 +370,56 @@ class CTeam extends CI_Controller {
 			);
 		}
 		MessageEcho(1, "", $response);
+	}
+	public function TeamManageDeleteAdminitor() {
+		$sTeamid = $_GET['teamid'];
+		$sAdminitorid = $_GET['adminitorid'];
+		$res = $this->MTeam->DeleteTeamAdminitorInfo($sTeamid, $sAdminitorid);	
+		if($res) {
+			MessageEcho(1);
+		} else {
+			MessageEcho(0);
+		}
+    }
+	public function TeamManageAddAdminitor() {
+		$sTeamid = $_GET['teamid'];
+		$sAdminitorid = $_GET['adminitorid'];
+		$sTime = GetTime();
+		$aAdminitorInfo = array(
+			'teamid' => $sTeamid,
+			'adminitorid' => $sAdminitorid,
+			'create_time' => "'$sTime'"
+		);
+		$res = $this->MTeam->AddTeamAdminitorInfo($aAdminitorInfo);
+		if($res) {
+			MessageEcho(1);
+		} else {
+			MessageEcho(0);
+		}
+	}
+	public function TeamManageAdminitors(){
+		$sTeamid = $_GET['teamid'];
+		$aTeamAdminitor = $this->MTeam->GetTeamAdminitorInfoByTeamid($sTeamid);	
+		$aHasAdminitor = array();
+		$aAdminitorids = array();
+		foreach($aTeamAdminitor as $aInfo) {
+			$sAdminitorid = $aInfo['adminitorid'];
+			$aAdminitorids[$sAdminitorid] = 1;
+			$aUserTeamInfo = $this->MTeam->GetUserTeamInfoByTeamidUserid($sTeamid, $sAdminitorid);
+        	$sPlayerName = $aUserTeamInfo['playername'];
+        	$sPosition = $aUserTeamInfo['position'];
+			$aHasAdminitor[] = array('userid' => $sAdminitorid, 'username' => $sPlayerName, 'position' => $sPosition);
+		}
+		$aTeamNoAdminitor = array();
+		$aTeamUserInfo = $this->MTeam->GetTeamUserInfoByTeamid($sTeamid, ['playername', 'position', 'userid']);
+		foreach($aTeamUserInfo as $aUserInfo){
+			$userid = $aUserInfo['userid'];
+			if(isset($aAdminitorids[$userid])) {
+				continue;	
+			}
+			$aTeamNoAdminitor[] = $aUserInfo;
+		}
+		$aResponse = array('has_adminitors' => $aHasAdminitor, 'teammembers' => $aTeamNoAdminitor);
+        MessageEcho(1, "", $aResponse);
 	}
 }
